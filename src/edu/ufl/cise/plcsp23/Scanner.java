@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import edu.ufl.cise.plcsp23.IToken.Kind;
+import org.junit.jupiter.api.TestClassOrder;
 
 public class Scanner implements IScanner {
     final String input;
@@ -87,10 +88,25 @@ public class Scanner implements IScanner {
                 case START -> {
                     tokenStart = pos;
                     switch (ch) {
+                        // EOL
                         case 0 -> { //end of input
                             return new Token(Kind.EOF, tokenStart, 0, inputChars);
                         }
-                        case 32, 13, 10, 9, 12 -> nextChar(); //whitespace ( SP | CR | LF | TAB | FF )
+
+                        // WHITESPACE
+                        case 32, 13, 10, 9, 12 -> nextChar(); //whitespace chars ( SP | CR | LF | TAB | FF )
+
+                        // NUM_LIT START and ZERO
+                        case '1','2','3','4','5','6','7','8','9' -> {
+                            state = State.IN_NUM_LIT;
+                            nextChar();
+                        }
+                        case '0' -> {
+                            nextChar();
+                            return new NumLitToken(Kind.NUM_LIT, tokenStart, 1, inputChars);
+
+                        }
+
                         // SINGLE CHAR OPERATORS OR SEPARATORS
                         case '.' -> {
                             nextChar();
@@ -179,13 +195,44 @@ public class Scanner implements IScanner {
                             nextChar();
                         }
 
+                        /*
+                        TODO:
+                         ADD SYSTEM FOR DETERMINING COLUMN AND ROW
+                         CHECK FOR IDENT START
+                         CHECK FOR NUM_LIT START
+                         CHECK FOR STRING_LIT START
+                         ADD ESCAPE SEQUENCES,
+                         CHECK RESERVED WORDS,
+                         CHECK FOR COMMENTS,
+                         MORE?
+                         */
+
+
                         default -> {
                             throw new UnsupportedOperationException(
                                     "not implemented yet");
                         }
                     }
                 }
-
+                case HAVE_EQ -> {
+                    if (ch == '=') {
+                        state = State.START;
+                        nextChar();
+                        return new Token(Kind.EQ, tokenStart,2, inputChars);
+                    }
+                    else {
+                        error("expected =");
+                    }
+                }
+                case IN_NUM_LIT -> {
+                    if (isDigit(ch)) {
+                        nextChar();
+                    }
+                    else {
+                        int length = pos-tokenStart;
+                        return new NumLitToken(Kind.NUM_LIT, tokenStart, length, inputChars);
+                    }
+                }
                 default -> {
                     throw new UnsupportedOperationException("Bug in Scanner");
                 }

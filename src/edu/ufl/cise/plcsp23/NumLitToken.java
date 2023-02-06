@@ -9,7 +9,15 @@ public class NumLitToken extends Token implements INumLitToken{
     }
 
     @Override
+    public Kind getKind() {
+        return Kind.NUM_LIT;
+    }
+    @Override
     public int getValue() {
-        return Integer.parseInt(Arrays.toString(source));
+        String val = "";
+        for (int i = 0; i < length; i++) {
+            val += source[pos + i];
+        }
+        return Integer.parseInt(val);
     }
 }
