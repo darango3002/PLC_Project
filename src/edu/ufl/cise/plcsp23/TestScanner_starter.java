@@ -292,4 +292,16 @@ class TestScanner_starter {
 		checkNUM_LIT(2,scanner.next());
 	}
 
+	@Test
+	void comment() throws LexicalException{
+		String input = """
+   			+
+			~Test
+			+
+			""";
+		IScanner scanner = CompilerComponentFactory.makeScanner(input);
+		checkToken(Kind.PLUS, scanner.next());
+		checkToken(Kind.PLUS, scanner.next());
+		checkEOF(scanner.next());
+	}
 }

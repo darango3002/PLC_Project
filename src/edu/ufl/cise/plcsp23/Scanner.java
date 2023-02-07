@@ -28,7 +28,6 @@ public class Scanner implements IScanner {
         HAVE_BITAND,
         HAVE_BITOR,
         HAVE_TIMES,
-
     }
 
     private static HashMap<String, Kind> reservedWords;
@@ -177,6 +176,18 @@ public class Scanner implements IScanner {
                             nextChar();
                             return new Token(Kind.MOD, tokenStart, 1, inputChars);
                         }
+                        case '~' -> { // COMMENT
+//                            System.out.println(ch);
+                            nextChar();
+                            while (true) {
+//                                System.out.println(ch);
+                                if (ch == '\n') {
+//                                    System.out.println("ESCAPE");
+                                    break;
+                                }
+                                nextChar();
+                            }
+                        }
 
                         // MULTI CHAR OPERATORS OR SEPARATORS
                         case '=' -> {
@@ -218,7 +229,7 @@ public class Scanner implements IScanner {
 
                         default -> {
                             throw new UnsupportedOperationException(
-                                    "not implemented yet");
+                                    "not implemented yet: " + ch);
                         }
                     }
                 }
