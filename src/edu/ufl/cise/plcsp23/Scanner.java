@@ -222,7 +222,6 @@ public class Scanner implements IScanner {
                          CHECK FOR STRING_LIT START
                          ADD ESCAPE SEQUENCES,
                          CHECK RESERVED WORDS,
-                         CHECK FOR COMMENTS,
                          MORE?
                          */
 
