@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import edu.ufl.cise.plcsp23.IToken.Kind;
-import org.junit.jupiter.api.TestClassOrder;
 
 public class Scanner implements IScanner {
     final String input;
@@ -14,6 +13,8 @@ public class Scanner implements IScanner {
     //invariant ch == inputChars[pos]
     int pos; //position of ch
     char ch; //next char
+    int currentLine;
+    int currentColumn;
 
     private enum State {
         START,
@@ -68,7 +69,8 @@ public class Scanner implements IScanner {
         inputChars = Arrays.copyOf(input.toCharArray(), input.length() + 1);
         pos = 0;
         ch = inputChars[pos];
-
+        currentLine = 1;
+        currentColumn = 1;
     }
 
     @Override public IToken next() throws LexicalException {
@@ -76,27 +78,50 @@ public class Scanner implements IScanner {
         return token;
     }
 
-    public void nextChar() {
+    private void nextChar() {
         pos++;
         ch = inputChars[pos];
+        nextColumn();
+    }
+
+    private void nextLine() {
+        currentLine++;
+        currentColumn = 1;
+    }
+
+    private void nextColumn() {
+        currentColumn++;
     }
 
     private Token scanToken() throws LexicalException {
         State state = State.START;
         int tokenStart = -1;
+        int startLine = -1;
+        int startColumn = -1;
 
         while(true) {
             switch (state) {
                 case START -> {
                     tokenStart = pos;
+                    startLine = currentLine;
+                    startColumn = currentColumn;
+
                     switch (ch) {
                         // EOL
                         case 0 -> { //end of input
-                            return new Token(Kind.EOF, tokenStart, 0, inputChars);
+                            return new Token(Kind.EOF, tokenStart, 0, inputChars, startLine, startColumn);
                         }
 
                         // WHITESPACE
-                        case 32, 13, 10, 9, 12 -> nextChar(); //whitespace chars ( SP | CR | LF | TAB | FF )
+                        case 32, 13, 10, 9, 12 -> { //whitespace chars ( SP | CR | LF | TAB | FF )
+                            if (ch == 10) {
+                                nextChar();
+                                nextLine();
+                            }
+                            else {
+                                nextChar();
+                            }
+                        }
 
                         // NUM_LIT START and ZERO
                         case '1','2','3','4','5','6','7','8','9' -> {
@@ -105,8 +130,7 @@ public class Scanner implements IScanner {
                         }
                         case '0' -> {
                             nextChar();
-                            return new NumLitToken(Kind.NUM_LIT, tokenStart, 1, inputChars);
-
+                            return new NumLitToken(Kind.NUM_LIT, tokenStart, 1, inputChars, startLine, startColumn);
                         }
 
                         // STRING LIT START
@@ -118,75 +142,63 @@ public class Scanner implements IScanner {
                         // SINGLE CHAR OPERATORS OR SEPARATORS
                         case '.' -> {
                             nextChar();
-                            return new Token(Kind.DOT, tokenStart, 1, inputChars);
+                            return new Token(Kind.DOT, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case ',' -> {
                             nextChar();
-                            return new Token(Kind.COMMA, tokenStart, 1, inputChars);
+                            return new Token(Kind.COMMA, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '?' -> {
                             nextChar();
-                            return new Token(Kind.QUESTION, tokenStart, 1, inputChars);
+                            return new Token(Kind.QUESTION, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case ':' -> {
                             nextChar();
-                            return new Token(Kind.COLON, tokenStart, 1, inputChars);
+                            return new Token(Kind.COLON, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '(' -> {
                             nextChar();
-                            return new Token(Kind.LPAREN, tokenStart, 1, inputChars);
+                            return new Token(Kind.LPAREN, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case ')' -> {
                             nextChar();
-                            return new Token(Kind.RPAREN, tokenStart, 1, inputChars);
+                            return new Token(Kind.RPAREN, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '[' -> {
                             nextChar();
-                            return new Token(Kind.LSQUARE, tokenStart, 1, inputChars);
+                            return new Token(Kind.LSQUARE, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case ']' -> {
                             nextChar();
-                            return new Token(Kind.RSQUARE, tokenStart, 1, inputChars);
+                            return new Token(Kind.RSQUARE, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '{' -> {
                             nextChar();
-                            return new Token(Kind.LCURLY, tokenStart, 1, inputChars);
+                            return new Token(Kind.LCURLY, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '}' -> {
                             nextChar();
-                            return new Token(Kind.RCURLY, tokenStart, 1, inputChars);
+                            return new Token(Kind.RCURLY, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '!' -> {
                             nextChar();
-                            return new Token(Kind.BANG, tokenStart, 1, inputChars);
+                            return new Token(Kind.BANG, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '+' -> {
                             nextChar();
-                            return new Token(Kind.PLUS, tokenStart, 1, inputChars);
+                            return new Token(Kind.PLUS, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '-' -> {
                             nextChar();
-                            return new Token(Kind.MINUS, tokenStart, 1, inputChars);
+                            return new Token(Kind.MINUS, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '/' -> {
                             nextChar();
-                            return new Token(Kind.DIV, tokenStart, 1, inputChars);
+                            return new Token(Kind.DIV, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case '%' -> {
                             nextChar();
-                            return new Token(Kind.MOD, tokenStart, 1, inputChars);
-                        }
-                        case '~' -> { // COMMENT
-//                            System.out.println(ch);
-                            nextChar();
-                            while (true) {
-//                                System.out.println(ch);
-                                if (ch == '\n') {
-//                                    System.out.println("ESCAPE");
-                                    break;
-                                }
-                                nextChar();
-                            }
+                            return new Token(Kind.MOD, tokenStart, 1, inputChars, startLine, startColumn);
                         }
 
                         // MULTI CHAR OPERATORS OR SEPARATORS
@@ -215,6 +227,22 @@ public class Scanner implements IScanner {
                             nextChar();
                         }
 
+                        // COMMENT
+                        case '~' -> {
+//                            System.out.println(ch);
+                            nextChar();
+                            while (true) {
+//                                System.out.println(ch);
+                                if (ch == '\n') {
+//                                    System.out.println("ESCAPE");
+                                    nextChar();
+                                    nextLine();
+                                    break;
+                                }
+                                nextChar();
+                            }
+                        }
+
                         /*
                         TODO:
                          ADD SYSTEM FOR DETERMINING COLUMN AND ROW
@@ -241,7 +269,7 @@ public class Scanner implements IScanner {
                     if (ch == '=') {
                         state = State.START;
                         nextChar();
-                        return new Token(Kind.EQ, tokenStart,2, inputChars);
+                        return new Token(Kind.EQ, tokenStart,2, inputChars, startLine, startColumn);
                     }
                     else {
                         error("expected =");
@@ -261,7 +289,7 @@ public class Scanner implements IScanner {
                             error("Number is too large!");
                         }
 
-                        return new NumLitToken(Kind.NUM_LIT, tokenStart, length, inputChars);
+                        return new NumLitToken(Kind.NUM_LIT, tokenStart, length, inputChars, startLine, startColumn);
                     }
                 }
                 case IN_STRING_LIT -> {
@@ -275,7 +303,8 @@ public class Scanner implements IScanner {
                     }
                     else if (ch == '"') {
                         int length = pos-tokenStart + 1;
-                        return new StringLitToken(Kind.STRING_LIT, tokenStart, length, inputChars);
+                        nextChar();
+                        return new StringLitToken(Kind.STRING_LIT, tokenStart, length, inputChars, startLine, startColumn);
                     }
                     else { // ANY ASCII VALUE EXCEPT CR AND LF
                         nextChar();

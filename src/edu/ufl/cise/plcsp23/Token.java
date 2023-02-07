@@ -8,18 +8,23 @@ public class Token implements IToken{
     final int pos;
     final int length;
     final char[] source;
+    int line;
+    int column;
 
-    public Token(Kind kind, int pos, int length, char[] source) {
+    public Token(Kind kind, int pos, int length, char[] source, int line, int column) {
         super();
         this.kind = kind;
         this.pos = pos;
         this.length = length;
         this.source = source;
+        this.line = line;
+        this.column = column;
+
     }
 
     @Override
     public SourceLocation getSourceLocation() {
-        return null;
+        return new SourceLocation(line, column);
     }
 
     @Override

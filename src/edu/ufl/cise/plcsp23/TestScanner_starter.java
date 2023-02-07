@@ -295,13 +295,13 @@ class TestScanner_starter {
 	@Test
 	void comment() throws LexicalException{
 		String input = """
-   			+
-			~Test
-			+
-			""";
+				+
+				~Test
+				+
+				""";
 		IScanner scanner = CompilerComponentFactory.makeScanner(input);
-		checkToken(Kind.PLUS, scanner.next());
-		checkToken(Kind.PLUS, scanner.next());
+		checkToken(Kind.PLUS, "+", new SourceLocation(1,1), scanner.next());
+		checkToken(Kind.PLUS, "+", new SourceLocation(3,1), scanner.next());
 		checkEOF(scanner.next());
 	}
 }
