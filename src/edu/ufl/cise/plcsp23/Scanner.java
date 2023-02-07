@@ -227,8 +227,13 @@ public class Scanner implements IScanner {
 
 
                         default -> {
-                            throw new UnsupportedOperationException(
-                                    "not implemented yet: " + ch);
+                            if (isLetter(ch) || ch == '_') { // IDENTIFIER
+                                state = State.IN_IDENT;
+                                nextChar();
+                            }
+                            else {
+                                throw new UnsupportedOperationException("not implemented yet: " + ch);
+                            }
                         }
                     }
                 }
@@ -287,6 +292,25 @@ public class Scanner implements IScanner {
                     }
                     else {
                         error("unidentified escape sequence using char: " + (int)ch);
+                    }
+                }
+                case IN_IDENT -> {
+                    System.out.println(ch);
+                    System.out.println(inputChars[pos]);
+                    System.out.println(inputChars[tokenStart]);
+                    if(isLetter(ch) || isDigit(ch) || ch == '_') {
+                        nextChar();
+                    }
+                    else {
+                        int length = pos-tokenStart;
+                        System.out.println(length);
+                        System.out.println("token end " + ch);
+                        int temp = tokenStart;
+                        while(temp < pos) {
+                            System.out.print(inputChars[temp]);
+                            temp++;
+                        }
+                        return new Token(Kind.IDENT, tokenStart, length, inputChars);
                     }
                 }
                 default -> {
