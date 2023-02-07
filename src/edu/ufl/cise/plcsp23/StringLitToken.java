@@ -18,6 +18,6 @@ public class StringLitToken extends Token implements IStringLitToken{
         for (int i = 0; i < length; i++) {
             val += source[pos + i];
         }
-        return val;
+        return val.substring(1, val.length() - 1);
     }
 }

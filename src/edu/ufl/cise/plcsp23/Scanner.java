@@ -269,16 +269,19 @@ public class Scanner implements IScanner {
                         nextChar();
                     }
                     else if (ch == '"') {
-                        int length = pos-tokenStart;
-                        return new StringLitToken(Kind.STRING_LIT, tokenStart + 1, length - 1, inputChars);
+                        int length = pos-tokenStart + 1;
+                        return new StringLitToken(Kind.STRING_LIT, tokenStart, length, inputChars);
                     }
-                    else { // ANY ASCII VALUE
+                    else { // ANY ASCII VALUE EXCEPT CR AND LF
                         nextChar();
                     }
 
                 }
                 case IN_STRING_ESCAPE -> {
-                    if (isEscapeChar(ch)) {
+                    if (ch == 'r' || ch == 'n') { // LF OR CR (newline and carriage return)
+                        error("NEWLINE OR CARRIAGE RETURN: " + (int)ch);
+                    }
+                    else if (isEscapeChar(ch)) {
                         state = State.IN_STRING_LIT;
                         nextChar();
                     }

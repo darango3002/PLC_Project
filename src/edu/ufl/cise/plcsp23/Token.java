@@ -29,7 +29,10 @@ public class Token implements IToken{
 
     @Override
     public String getTokenString() {
-        String tokenString = Arrays.toString(source).substring(pos, pos + length);
-        return tokenString;
+        String val = "";
+        for (int i = 0; i < length; i++) {
+            val += source[pos + i];
+        }
+        return val;
     }
 }
