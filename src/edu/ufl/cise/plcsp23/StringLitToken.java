@@ -13,12 +13,11 @@ public class StringLitToken extends Token implements IStringLitToken{
         return Kind.STRING_LIT;
     }
 
-    @Override
-    public String getTokenString() {
-        return Arrays.toString(source);
-    }
-
     public String getValue() {
-        return null;
+        String val = "";
+        for (int i = 0; i < length; i++) {
+            val += source[pos + i];
+        }
+        return val;
     }
 }

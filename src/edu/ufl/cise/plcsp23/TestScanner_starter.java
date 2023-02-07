@@ -108,7 +108,8 @@ class TestScanner_starter {
 		String input = " \t \r\n \f \n";
 		IScanner scanner = CompilerComponentFactory.makeScanner(input);
 		checkEOF(scanner.next());
-		checkEOF(scanner.next());  //repeated invocations of next after end reached should return EOF token
+		checkEOF(scanner.next());
+		checkEOF(scanner.next());//repeated invocations of next after end reached should return EOF token
 	}
 
 	@Test
@@ -272,6 +273,23 @@ class TestScanner_starter {
 		assertThrows(LexicalException.class, () -> {
 			scanner.next();
 		});
+	}
+	@Test
+	void numLits() throws LexicalException{
+		String input = """
+			123
+			05
+			240
+			1+2
+			""";
+		IScanner scanner = CompilerComponentFactory.makeScanner(input);
+		checkNUM_LIT(123,scanner.next());
+		checkNUM_LIT(0,scanner.next());
+		checkNUM_LIT(5,scanner.next());
+		checkNUM_LIT(240,scanner.next());
+		checkNUM_LIT(1,scanner.next());
+		checkToken(Kind.PLUS,scanner.next());
+		checkNUM_LIT(2,scanner.next());
 	}
 
 }

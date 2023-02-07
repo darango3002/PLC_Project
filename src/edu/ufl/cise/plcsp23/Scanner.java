@@ -19,6 +19,9 @@ public class Scanner implements IScanner {
         START,
         IN_IDENT,
         IN_NUM_LIT,
+        IN_STRING_LIT,
+        IN_STRING_ESCAPE,
+        IN_ESCAPE_SEQUENCE,
         HAVE_EQ,
         HAVE_LT,
         HAVE_GT,
@@ -105,6 +108,12 @@ public class Scanner implements IScanner {
                             nextChar();
                             return new NumLitToken(Kind.NUM_LIT, tokenStart, 1, inputChars);
 
+                        }
+
+                        // STRING LIT START
+                        case '"' -> {
+                            state = State.IN_STRING_LIT;
+                            nextChar();
                         }
 
                         // SINGLE CHAR OPERATORS OR SEPARATORS
@@ -199,7 +208,6 @@ public class Scanner implements IScanner {
                         TODO:
                          ADD SYSTEM FOR DETERMINING COLUMN AND ROW
                          CHECK FOR IDENT START
-                         CHECK FOR NUM_LIT START
                          CHECK FOR STRING_LIT START
                          ADD ESCAPE SEQUENCES,
                          CHECK RESERVED WORDS,
@@ -230,7 +238,42 @@ public class Scanner implements IScanner {
                     }
                     else {
                         int length = pos-tokenStart;
+
+                        try { //checking for large inputs of integers
+                            Integer.parseInt(input.substring(tokenStart, length + tokenStart));
+                        }
+                        catch (NumberFormatException ignored) {
+                            error("Number is too large!");
+                        }
+
                         return new NumLitToken(Kind.NUM_LIT, tokenStart, length, inputChars);
+                    }
+                }
+                case IN_STRING_LIT -> {
+
+                    if (ch == 10 || ch == 13) { // LF OR CR (newline and carriage return)
+                        error("NEWLINE OR CARRIAGE RETURN: " + (int)ch);
+                    }
+                    else if (ch == '\\') {
+                        state = State.IN_STRING_ESCAPE;
+                        nextChar();
+                    }
+                    else if (ch == '"') {
+                        int length = pos-tokenStart;
+                        return new StringLitToken(Kind.STRING_LIT, tokenStart + 1, length - 1, inputChars);
+                    }
+                    else { // ANY ASCII VALUE
+                        nextChar();
+                    }
+
+                }
+                case IN_STRING_ESCAPE -> {
+                    if (isEscapeChar(ch)) {
+                        state = State.IN_STRING_LIT;
+                        nextChar();
+                    }
+                    else {
+                        error("unidentified escape sequence using char: " + (int)ch);
                     }
                 }
                 default -> {
@@ -249,10 +292,9 @@ public class Scanner implements IScanner {
         return ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
     }
 
-    private boolean isEscapeSequence(int ch) {
-        return (ch == '\b'); // TODO: add rest of escape sequences
+    private boolean isEscapeChar(int ch) {
+        return (ch == 'b' || ch == 't' || ch == 'n' || ch == 'r' || ch == '"' || ch == '\\');
     }
-
 
 
     private void error (String message) throws LexicalException {
