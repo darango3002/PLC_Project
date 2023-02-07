@@ -343,7 +343,7 @@ public class Scanner implements IScanner {
                     }
                 }
                 default -> {
-                    throw new UnsupportedOperationException("Bug in Scanner");
+                    throw new LexicalException("Bug in Scanner");
                 }
             }
         }
