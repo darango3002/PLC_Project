@@ -232,7 +232,7 @@ public class Scanner implements IScanner {
                                 nextChar();
                             }
                             else {
-                                throw new UnsupportedOperationException("not implemented yet: " + ch);
+                                throw new LexicalException("not implemented yet: " + ch);
                             }
                         }
                     }
