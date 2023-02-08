@@ -369,6 +369,9 @@ public class Scanner implements IScanner {
                         nextChar();
                         return new StringLitToken(Kind.STRING_LIT, tokenStart, length, inputChars, startLine, startColumn);
                     }
+                    else if (ch == 0) {
+                        error("No ending quotes");
+                    }
                     else { // ANY ASCII VALUE EXCEPT CR AND LF
                         nextChar();
                     }
