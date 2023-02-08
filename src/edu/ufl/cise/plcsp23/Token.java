@@ -19,7 +19,6 @@ public class Token implements IToken{
         this.source = source;
         this.line = line;
         this.column = column;
-        System.out.println("NEW TOKEN: " + kind.toString());
     }
 
     @Override

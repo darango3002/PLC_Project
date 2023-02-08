@@ -101,7 +101,6 @@ public class Scanner implements IScanner {
         int startColumn = -1;
 
         while(true) {
-            System.out.println(ch);
             switch (state) {
                 case START -> {
                     tokenStart = pos;
@@ -256,7 +255,7 @@ public class Scanner implements IScanner {
 
 
                         default -> {
-                            System.out.println(ch);
+//                            System.out.println(ch);
                             if (isLetter(ch) || ch == '_') { // IDENTIFIER
                                 state = State.IN_IDENT;
                                 nextChar();
@@ -387,7 +386,7 @@ public class Scanner implements IScanner {
                     }
                 }
                 case IN_IDENT -> {
-                    System.out.println(ch);
+//                    System.out.println(ch);
                     if(isLetter(ch) || isDigit(ch) || ch == '_') {
                         nextChar();
                     }
@@ -402,9 +401,9 @@ public class Scanner implements IScanner {
                             tempToken += inputChars[temp];
                             temp++;
                         }
-                        System.out.println("NEW TOKEN: " + tempToken);
+//                        System.out.println("NEW TOKEN: " + tempToken);
                         if (reservedWords.containsKey(tempToken)) {
-                            System.out.println("KEYWORD: " + tempToken);
+//                            System.out.println("KEYWORD: " + tempToken);
                             return new Token(reservedWords.get(tempToken), tokenStart, length, inputChars, startLine, startColumn);
                         }
                         else {
