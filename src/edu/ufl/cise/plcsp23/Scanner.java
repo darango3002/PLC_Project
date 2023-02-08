@@ -346,10 +346,7 @@ public class Scanner implements IScanner {
 
                 }
                 case IN_STRING_ESCAPE -> {
-                    if (ch == 'r' || ch == 'n') { // LF OR CR (newline and carriage return)
-                        error("NEWLINE OR CARRIAGE RETURN: " + (int)ch);
-                    }
-                    else if (isEscapeChar(ch)) {
+                    if (isEscapeChar(ch)) {
                         state = State.IN_STRING_LIT;
                         nextChar();
                     }
