@@ -250,6 +250,8 @@ public class Scanner implements IScanner {
                          CHECK FOR STRING_LIT START
                          ADD ESCAPE SEQUENCES,
                          MORE?
+
+                         Add BITAND and BITOR
                          */
 
 
@@ -263,6 +265,15 @@ public class Scanner implements IScanner {
                                 throw new LexicalException("not implemented yet: " + ch);
                             }
                         }
+                    }
+                }
+                case HAVE_TIMES -> {
+                    if (ch == '*') {
+                        nextChar();
+                        return new Token(Kind.EXP, tokenStart, 2, inputChars, startLine, startColumn);
+                    }
+                    else {
+                        return new Token(Kind.TIMES, tokenStart, 1, inputChars, startLine, startColumn);
                     }
                 }
                 case HAVE_EQ -> {
@@ -307,6 +318,24 @@ public class Scanner implements IScanner {
                     else {
 //                        nextChar();
                         return new Token(Kind.GT, tokenStart, 1, inputChars, startLine, startColumn);
+                    }
+                }
+                case HAVE_BITAND -> {
+                    if (ch == '&') {
+                        nextChar();
+                        return new Token(Kind.AND, tokenStart, 2, inputChars, startLine, startColumn);
+                    }
+                    else {
+                        return new Token(Kind.BITAND, tokenStart, 2, inputChars, startLine, startColumn);
+                    }
+                }
+                case HAVE_BITOR -> {
+                    if (ch == '|') {
+                        nextChar();
+                        return new Token(Kind.OR, tokenStart, 2, inputChars, startLine, startColumn);
+                    }
+                    else {
+                        return new Token(Kind.BITOR, tokenStart, 2, inputChars, startLine, startColumn);
                     }
                 }
                 case IN_NUM_LIT -> {
@@ -399,7 +428,6 @@ public class Scanner implements IScanner {
     private boolean isEscapeChar(int ch) {
         return (ch == 'b' || ch == 't' || ch == 'n' || ch == 'r' || ch == '"' || ch == '\\');
     }
-
 
     private void error (String message) throws LexicalException {
         throw new LexicalException("Error at pos " + pos + ": "  + message);

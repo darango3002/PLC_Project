@@ -304,4 +304,48 @@ class TestScanner_starter {
 		checkToken(Kind.PLUS, "+", new SourceLocation(3,1), scanner.next());
 		checkEOF(scanner.next());
 	}
+
+	@Test
+	void logic() throws LexicalException {
+		String input = """
+				|
+				||
+				&
+				&&
+				&|&&||
+				&&&|||
+				""";
+		IScanner scanner = CompilerComponentFactory.makeScanner(input);
+		checkToken(Kind.BITOR, scanner.next());
+		checkToken(Kind.OR, scanner.next());
+		checkToken(Kind.BITAND, scanner.next());
+		checkToken(Kind.AND, scanner.next());
+		checkToken(Kind.BITAND, scanner.next());
+		checkToken(Kind.BITOR, scanner.next());
+		checkToken(Kind.AND, scanner.next());
+		checkToken(Kind.OR, scanner.next());
+		checkToken(Kind.AND, scanner.next());
+		checkToken(Kind.BITAND, scanner.next());
+		checkToken(Kind.OR, scanner.next());
+		checkToken(Kind.BITOR, scanner.next());
+	}
+
+	@Test
+	void plusTimes() throws LexicalException {
+		String input = """
+    			*+**+***+*
+    			***
+				""";
+		IScanner scanner = CompilerComponentFactory.makeScanner(input);
+		checkToken(Kind.TIMES, scanner.next());
+		checkToken(Kind.PLUS, scanner.next());
+		checkToken(Kind.EXP, scanner.next());
+		checkToken(Kind.PLUS, scanner.next());
+		checkToken(Kind.EXP, scanner.next());
+		checkToken(Kind.TIMES, scanner.next());
+		checkToken(Kind.PLUS, scanner.next());
+		checkToken(Kind.TIMES, scanner.next());
+		checkToken(Kind.EXP, scanner.next());
+		checkToken(Kind.TIMES, scanner.next());
+	}
 }
