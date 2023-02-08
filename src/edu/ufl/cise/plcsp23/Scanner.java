@@ -245,11 +245,8 @@ public class Scanner implements IScanner {
 
                         /*
                         TODO:
-                         ADD SYSTEM FOR DETERMINING COLUMN AND ROW
-                         CHECK FOR IDENT START
                          CHECK FOR STRING_LIT START
                          ADD ESCAPE SEQUENCES,
-                         CHECK RESERVED WORDS,
                          MORE?
                          */
 
@@ -273,7 +270,8 @@ public class Scanner implements IScanner {
                         return new Token(Kind.EQ, tokenStart,2, inputChars, startLine, startColumn);
                     }
                     else {
-                        error("expected =");
+                        nextChar();
+                        return new Token(Kind.ASSIGN, tokenStart,1, inputChars, startLine, startColumn);
                     }
                 }
                 case IN_NUM_LIT -> {
