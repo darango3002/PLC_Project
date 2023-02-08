@@ -29,6 +29,7 @@ public class Scanner implements IScanner {
         HAVE_BITAND,
         HAVE_BITOR,
         HAVE_TIMES,
+        IN_EXCHANGE,
     }
 
     private static HashMap<String, Kind> reservedWords;
@@ -100,6 +101,7 @@ public class Scanner implements IScanner {
         int startColumn = -1;
 
         while(true) {
+            System.out.println(ch);
             switch (state) {
                 case START -> {
                     tokenStart = pos;
@@ -274,6 +276,39 @@ public class Scanner implements IScanner {
                         return new Token(Kind.ASSIGN, tokenStart,1, inputChars, startLine, startColumn);
                     }
                 }
+                case HAVE_LT -> {
+                    if (ch == '=') {
+                        nextChar();
+                        return new Token(Kind.LE, tokenStart, 2, inputChars, startLine, startColumn);
+                    }
+                    else if (ch == '-') {
+                        state = State.IN_EXCHANGE;
+                        nextChar();
+                    }
+                    else {
+//                        nextChar();
+                        return new Token(Kind.LT, tokenStart, 1, inputChars, startLine, startColumn);
+                    }
+                }
+                case IN_EXCHANGE -> {
+                    if (ch == '>') {
+                        nextChar();
+                        return new Token(Kind.EXCHANGE, tokenStart, 3, inputChars, startLine, startColumn);
+                    }
+                    else {
+                        throw new LexicalException("exchange exception");
+                    }
+                }
+                case HAVE_GT -> {
+                    if (ch == '=') {
+                        nextChar();
+                        return new Token(Kind.GE, tokenStart, 2, inputChars, startLine, startColumn);
+                    }
+                    else {
+//                        nextChar();
+                        return new Token(Kind.GT, tokenStart, 1, inputChars, startLine, startColumn);
+                    }
+                }
                 case IN_NUM_LIT -> {
                     if (isDigit(ch)) {
                         nextChar();
@@ -349,7 +384,7 @@ public class Scanner implements IScanner {
                     }
                 }
                 default -> {
-                    throw new LexicalException("Bug in Scanner");
+                    throw new LexicalException("Bug in Scanner: " + ch);
                 }
             }
         }
