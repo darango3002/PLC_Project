@@ -51,7 +51,7 @@ public class Scanner implements IScanner {
         reservedWords.put("r", Kind.RES_r);
         reservedWords.put("X", Kind.RES_X);
         reservedWords.put("Y", Kind.RES_Y);
-        reservedWords.put("Z", Kind.RES_X);
+        reservedWords.put("Z", Kind.RES_Z);
         reservedWords.put("x_cart", Kind.RES_x_cart);
         reservedWords.put("y_cart", Kind.RES_y_cart);
         reservedWords.put("a_polar", Kind.RES_a_polar);
@@ -283,7 +283,7 @@ public class Scanner implements IScanner {
                         return new Token(Kind.EQ, tokenStart,2, inputChars, startLine, startColumn);
                     }
                     else {
-                        nextChar();
+//                        nextChar();
                         return new Token(Kind.ASSIGN, tokenStart,1, inputChars, startLine, startColumn);
                     }
                 }
