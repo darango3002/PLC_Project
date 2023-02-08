@@ -230,12 +230,9 @@ public class Scanner implements IScanner {
 
                         // COMMENT
                         case '~' -> {
-//                            System.out.println(ch);
                             nextChar();
                             while (true) {
-//                                System.out.println(ch);
                                 if (ch == '\n') {
-//                                    System.out.println("ESCAPE");
                                     nextChar();
                                     nextLine();
                                     break;
@@ -255,7 +252,6 @@ public class Scanner implements IScanner {
 
 
                         default -> {
-//                            System.out.println(ch);
                             if (isLetter(ch) || ch == '_') { // IDENTIFIER
                                 state = State.IN_IDENT;
                                 nextChar();
@@ -386,24 +382,18 @@ public class Scanner implements IScanner {
                     }
                 }
                 case IN_IDENT -> {
-//                    System.out.println(ch);
                     if(isLetter(ch) || isDigit(ch) || ch == '_') {
                         nextChar();
                     }
                     else {
                         int length = pos-tokenStart;
-//                        System.out.println(length);
-//                        System.out.println("token end " + ch);
                         int temp = tokenStart;
                         String tempToken = "";
                         while(temp < pos) {
-//                            System.out.print(inputChars[temp]);
                             tempToken += inputChars[temp];
                             temp++;
                         }
-//                        System.out.println("NEW TOKEN: " + tempToken);
                         if (reservedWords.containsKey(tempToken)) {
-//                            System.out.println("KEYWORD: " + tempToken);
                             return new Token(reservedWords.get(tempToken), tokenStart, length, inputChars, startLine, startColumn);
                         }
                         else {

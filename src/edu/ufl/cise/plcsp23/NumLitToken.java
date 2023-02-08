@@ -1,7 +1,5 @@
 package edu.ufl.cise.plcsp23;
 
-import java.util.Arrays;
-
 public class NumLitToken extends Token implements INumLitToken{
 
     public NumLitToken(Kind kind, int pos, int length, char[] source, int line, int column) {

@@ -1,7 +1,5 @@
 package edu.ufl.cise.plcsp23;
 
-import java.util.Arrays;
-
 public class Token implements IToken{
 
     final Kind kind;
