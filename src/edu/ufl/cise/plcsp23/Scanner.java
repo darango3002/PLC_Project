@@ -326,7 +326,7 @@ public class Scanner implements IScanner {
                         return new Token(Kind.AND, tokenStart, 2, inputChars, startLine, startColumn);
                     }
                     else {
-                        return new Token(Kind.BITAND, tokenStart, 2, inputChars, startLine, startColumn);
+                        return new Token(Kind.BITAND, tokenStart, 1, inputChars, startLine, startColumn);
                     }
                 }
                 case HAVE_BITOR -> {
