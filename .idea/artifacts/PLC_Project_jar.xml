@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PLC_Project:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PLC_Project_jar</output-path>
+    <root id="archive" name="PLC_Project.jar">
+      <element id="dir-copy" path="$PROJECT_DIR$/src/edu" />
+    </root>
+  </artifact>
+</component>
