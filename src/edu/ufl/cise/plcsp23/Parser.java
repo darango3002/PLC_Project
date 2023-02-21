@@ -153,6 +153,7 @@ public class Parser implements IParser{
 
     // <unary_expr> ::= ( ! | - | sin | cos | atan) <unary_expr> |   <primary_expr>
     Expr unary_expr() throws LexicalException, SyntaxException {
+        // TODO: FIX (returns null for some reason)
         IToken firstToken = t;
         Expr e = null;
         if (isKind(Kind.BANG, Kind.MINUS, Kind.RES_sin, Kind.RES_cos, Kind.RES_atan)) {
