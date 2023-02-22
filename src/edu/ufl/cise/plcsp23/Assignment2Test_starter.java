@@ -474,4 +474,36 @@ class Assignment2Test_starter {
 		checkNumLit(ue.getE(), 3);
 	}
 
+	@Test
+	void bigCondition() throws PLCException{
+		String input = """
+				if (this | is & the * big + condition) ?
+					(do + this) ?
+					(otherwise / do / -this)""";
+		ConditionalExpr ce = checkConditional(getAST(input));
+
+		BinaryExpr guard = checkBinary(ce.getGuard(), Kind.BITOR);
+		checkIdent(guard.getLeft(), "this");
+		BinaryExpr guardR = checkBinary(guard.getRight(), Kind.BITAND);
+		checkIdent(guardR.getLeft(), "is");
+		BinaryExpr guardRR = checkBinary(guardR.getRight(), Kind.PLUS);
+		checkIdent(guardRR.getRight(), "condition");
+		BinaryExpr guardRRL = checkBinary(guardRR.getLeft(), Kind.TIMES);
+		checkIdent(guardRRL.getLeft(), "the");
+		checkIdent(guardRRL.getRight(), "big");
+
+		BinaryExpr trueCase = checkBinary(ce.getTrueCase(), Kind.PLUS);
+		checkIdent(trueCase.getLeft(), "do");
+		checkIdent(trueCase.getRight(), "this");
+
+		BinaryExpr falseCase = checkBinary(ce.getFalseCase(), Kind.DIV);
+		BinaryExpr falseCaseL = checkBinary(falseCase.getLeft(), Kind.DIV);
+		checkIdent(falseCaseL.getLeft(), "otherwise");
+		checkIdent(falseCaseL.getRight(), "do");
+		UnaryExpr falseCaseR = checkUnary(falseCase.getRight(), Kind.MINUS);
+		checkIdent(falseCaseR.getE(), "this");
+	}
+
+
+
 }

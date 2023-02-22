@@ -66,20 +66,21 @@ public class Parser implements IParser{
     // <conditional_expr>  ::= if <expr> ? <expr> ? <expr>
     Expr conditional_expr() throws LexicalException, SyntaxException {
         IToken firstToken = t;
-        Expr left = null;
-        Expr middle = null;
-        Expr right = null;
+        Expr e = null;
+        Expr guard = null;
+        Expr trueCase = null;
+        Expr falseCase = null;
 
         consume();
-        left = expr();
+        guard = expr();
         consume();
-        middle = expr();
+        trueCase = expr();
         consume();
-        right = expr();
+        falseCase = expr();
 
-        left = new ConditionalExpr(firstToken, left, middle, right);
+        e = new ConditionalExpr(firstToken, guard, trueCase, falseCase);
 
-        return left;
+        return e;
     }
 
     // <or_expr> ::=  <and_expr> (  ( | | || ) <and_expr>)*
