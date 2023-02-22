@@ -38,6 +38,14 @@ public class Parser implements IParser{
             throw new SyntaxException("current token " + t + "does not match expected token: " + c);
     }
 
+    void match(Kind k) throws SyntaxException, LexicalException {
+        if (t.getKind() == k) {
+            consume();
+        }
+        else
+            throw new SyntaxException("current token " + t + "does not match expected token: " + k);
+    }
+
     void consume() throws LexicalException {
         t = scanner.next();
     }
@@ -204,7 +212,7 @@ public class Parser implements IParser{
         else if (isKind(Kind.LPAREN)) {
             consume();
             e = expr();
-            match(t);
+            match(Kind.RPAREN);
         }
         else if (isKind(Kind.RES_Z)) {
             e = new ZExpr(firstToken);
