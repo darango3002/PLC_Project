@@ -62,6 +62,9 @@ public class Scanner implements IScanner {
         reservedWords.put("atan", Kind.RES_atan);
         reservedWords.put("if", Kind.RES_if);
         reservedWords.put("while", Kind.RES_while);
+        reservedWords.put("red", Kind.RES_red);
+        reservedWords.put("grn", Kind.RES_grn);
+        reservedWords.put("blu", Kind.RES_blu);
     }
 
     //constructor

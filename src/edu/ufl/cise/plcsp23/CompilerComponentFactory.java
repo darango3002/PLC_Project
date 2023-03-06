@@ -20,4 +20,10 @@ public class CompilerComponentFactory {
 		Scanner scanner =  new Scanner(input);
 		return new Parser(scanner);
 	}
+
+	public static IParser makeParser (String input)
+		throws LexicalException {
+		Scanner scanner =  new Scanner(input);
+		return new Parser(scanner);
+	}
 }
