@@ -4,6 +4,10 @@ import edu.ufl.cise.plcsp23.ast.AST;
 import edu.ufl.cise.plcsp23.ast.*;
 import edu.ufl.cise.plcsp23.IToken.Kind;
 
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Parser implements IParser{
 
     IToken t; // current token
@@ -16,7 +20,7 @@ public class Parser implements IParser{
 
     @Override
     public AST parse() throws PLCException {
-            return expr();
+            return program();
     }
 
     protected boolean isKind(Kind kind) {
@@ -29,6 +33,11 @@ public class Parser implements IParser{
                 return true;
         }
         return false;
+    }
+
+    // Checks if the Kind of token is a Kind of Type
+    protected boolean isTypeKind() {
+        return isKind(Kind.RES_image, Kind.RES_pixel, Kind.RES_int, Kind.RES_string, Kind.RES_void);
     }
     void match(IToken c) throws SyntaxException, LexicalException {
         if (t == c) {
@@ -48,6 +57,160 @@ public class Parser implements IParser{
 
     void consume() throws LexicalException {
         t = scanner.next();
+    }
+
+    // <program> ::= <Type> IDENT ( <param_list> ) <block>
+    Program program() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Program p = null;
+
+        Type type = null;
+        Ident ident = null;
+        List<NameDef> paramList = null;
+        Block block = null;
+
+        if (isTypeKind()) {
+            type = Type.getType(t);
+            consume();
+
+            if (isKind(Kind.IDENT)) {
+                ident = new Ident(t);
+                consume();
+            }
+            else
+                throw new SyntaxException("Expected Kind.IDENT! Received Kind: " + t.getKind());
+
+            match(Kind.LPAREN);
+            paramList = param_list();
+            match(Kind.RPAREN);
+
+            block = block();
+
+            p = new Program(firstToken, type, ident, paramList, block);
+        }
+        else
+            throw new SyntaxException("Expected Kind of Type! Received Kind: " + t.getKind());
+
+        return p;
+    }
+
+    // <block> ::= { <dec_list> <statement_list< }
+    Block block() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Block b = null;
+        List<Declaration> decList = null;
+        List<Statement> statementList = null;
+
+        match(Kind.LCURLY);
+        decList = dec_list();
+        statementList = statement_list();
+        match(Kind.RCURLY);
+
+        return new Block(firstToken, decList, statementList);
+    }
+
+    // <dec_list> ::= (<declaration>.)*
+    List<Declaration> dec_list() throws SyntaxException, LexicalException {
+        List<Declaration> decList = new ArrayList<Declaration>();
+        Declaration d = null;
+
+        while (isTypeKind()) {
+            d = declaration();
+            match(Kind.DOT);
+
+            decList.add(d);
+        }
+        return decList;
+
+    }
+
+    // <statement_list> ::= (<statement>.)*
+    List<Statement> statement_list() throws SyntaxException, LexicalException {
+        List<Statement> statementList = new ArrayList<Statement>();
+        Statement s = null;
+
+        while (isKind(Kind.IDENT, Kind.RES_write, Kind.RES_while)) { // predict of <statement>
+            s = statement();
+            match(Kind.DOT);
+
+            statementList.add(s);
+        }
+        return statementList;
+    }
+
+    // <param_list> ::= ε | <name_def> (, <name_def>)*
+    List<NameDef> param_list() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        List<NameDef> paramList = new ArrayList<NameDef>();
+
+        if (isKind(Kind.RPAREN))
+            return paramList;
+        else if (isTypeKind()) {
+            paramList.add(name_def());
+
+            while (isKind(Kind.COMMA)) {
+                consume();
+                paramList.add(name_def());
+            }
+        }
+        else
+            throw new SyntaxException("Expected Kind of Type! Received Kind: " + t.getKind());
+
+        return paramList;
+    }
+
+    // <name_def> ::= <Type> (IDENT | <dimension> IDENT)
+    NameDef name_def() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Type type = null;
+        Dimension dimension = null;
+        Ident ident = null;
+
+        if (isTypeKind()) {
+            type = Type.getType(t);
+            consume();
+
+            if (isKind(Kind.IDENT)) {
+                ident = new Ident(t);
+                consume();
+            }
+            else if (isKind(Kind.LSQUARE)) {
+                dimension = dimension();
+
+                if (isKind(Kind.IDENT)) {
+                    ident = new Ident(t);
+                    consume();
+                }
+                else
+                    throw new SyntaxException("Expected Kind.IDENT! Received Kind: " + t.getKind());
+
+            }
+            else
+                throw new SyntaxException("Expected Kind.IDENT or Kind.LSQUARE (first of <dimension>). Received Kind: " + t.getKind());
+
+        }
+        return new NameDef(firstToken, type, dimension, ident);
+
+    }
+
+    // <declaration> ::= NameDef (ε | = Expr)
+    Declaration declaration() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        NameDef nameDef = null;
+        Expr initializer = null;
+
+        if (isTypeKind()) {
+            nameDef = name_def();
+
+            if (isKind(Kind.EQ)) {
+                consume();
+                initializer = expr();
+            }
+        }
+        else
+            throw new SyntaxException("Expected Kind of Type! Received Kind: " + t.getKind());
+
+        return new Declaration(firstToken, nameDef, initializer);
     }
 
     // <expr> ::=   <conditional_expr> | <or_expr>
@@ -71,11 +234,11 @@ public class Parser implements IParser{
         Expr trueCase = null;
         Expr falseCase = null;
 
-        consume();
+        consume(); // consumes 'if'
         guard = expr();
-        consume();
+        match(Kind.QUESTION);
         trueCase = expr();
-        consume();
+        match(Kind.QUESTION);
         falseCase = expr();
 
         e = new ConditionalExpr(firstToken, guard, trueCase, falseCase);
@@ -182,6 +345,7 @@ public class Parser implements IParser{
             consume();
             e = new UnaryExpr(firstToken, op.getKind(), unary_expr());
         }
+        // TODO: IMPLEMENT UnaryExprPostfix
         else
             e = primary_expr();
 
@@ -223,10 +387,93 @@ public class Parser implements IParser{
             e = new RandomExpr(firstToken);
             consume();
         }
+        else if (isKind(Kind.RES_x, Kind.RES_y, Kind.RES_a, Kind.RES_r)) {
+            e = new PredeclaredVarExpr(firstToken);
+            consume();
+        }
+        // TODO: IMPLEMENT ExpandedPixel and PixelFunctionExpr within PrimaryExpr
         else
             throw new SyntaxException("EMPTY EXPRESSION");
 
         return e;
+    }
+
+    PixelSelector pixel_selector() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Expr x = null;
+        Expr y = null;
+
+        consume(); // consuming '['
+        x = expr();
+        match(Kind.COMMA);
+        y = expr();
+        match(Kind.RSQUARE);
+
+        return new PixelSelector(firstToken, x, y);
+    }
+
+    Dimension dimension() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Expr width = null;
+        Expr height = null;
+
+        consume(); // consumes '['
+        width = expr();
+        match(Kind.COMMA);
+        height = expr();
+        match(Kind.RSQUARE);
+
+        return new Dimension(firstToken, width, height);
+    }
+
+    LValue l_value() throws SyntaxException, LexicalException{
+        IToken firstToken = t;
+        Ident ident = null;
+        PixelSelector ps = null;
+        ColorChannel color = null;
+
+        if (isKind(Kind.IDENT)) {
+            ident = new Ident(t);
+            consume();
+
+            if (isKind(Kind.LSQUARE)) { // Predict of <pixel_selector>
+                ps = pixel_selector();
+            }
+            if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
+                color = ColorChannel.getColor(t);
+                consume();
+            }
+        }
+        return new LValue(firstToken, ident, ps, color);
+    }
+
+    Statement statement() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        LValue lv = null;
+        Expr e = null;
+        Expr guard = null;
+        Block block = null;
+
+        if (isKind(Kind.IDENT)) {
+            lv = l_value();
+            match(Kind.EQ);
+            e = expr();
+            return new AssignmentStatement(firstToken, lv, e);
+        }
+        else if (isKind(Kind.RES_write)) {
+            consume();
+            e = expr();
+            return new WriteStatement(firstToken, e);
+        }
+        else if (isKind(Kind.RES_while)) {
+            consume();
+            guard = expr();
+            block = block();
+            return new WhileStatement(firstToken, guard, block);
+        }
+        else
+            throw new SyntaxException("Expected Kind.IDENT (LValue), Kind.RES_write, or Kind.RES_while. Received Kind :" + t.getKind());
+
     }
 
 
