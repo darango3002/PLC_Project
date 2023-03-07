@@ -3,7 +3,9 @@ package edu.ufl.cise.plcsp23;
 import edu.ufl.cise.plcsp23.ast.AST;
 import edu.ufl.cise.plcsp23.ast.*;
 import edu.ufl.cise.plcsp23.IToken.Kind;
+import edu.ufl.cise.plcsp23.ast.Dimension;
 
+import java.awt.*;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
@@ -234,7 +236,8 @@ public class Parser implements IParser{
         Expr trueCase = null;
         Expr falseCase = null;
 
-        consume(); // consumes 'if'
+//        consume(); // consumes 'if'
+        match(Kind.RES_if);
         guard = expr();
         match(Kind.QUESTION);
         trueCase = expr();
@@ -347,9 +350,24 @@ public class Parser implements IParser{
         }
         // TODO: IMPLEMENT UnaryExprPostfix
         else
-            e = primary_expr();
+            e = unary_expr_postfix();
 
         return e;
+    }
+
+    UnaryExprPostfix unary_expr_postfix() throws LexicalException, SyntaxException {
+        IToken firstToken = t;
+        Expr prim = primary_expr();
+        PixelSelector pixel = null;
+        ColorChannel channel = null;
+
+        if (isKind(Kind.LSQUARE)) {
+            pixel = pixel_selector();
+        }
+        if (isKind(Kind.COLON)) {
+            channel = channel_selector();
+        }
+        return new UnaryExprPostfix(t, prim, pixel, channel);
     }
 
     // <primary_expr> ::=
@@ -398,12 +416,28 @@ public class Parser implements IParser{
         return e;
     }
 
+    ColorChannel channel_selector() throws SyntaxException, LexicalException {
+//        IToken firstToken = t;
+
+        if (isKind(Kind.COLON)) {
+            if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
+                return ColorChannel.getColor(t);
+            }
+            else {
+                throw new SyntaxException("INVALID CHANNEL SELECTOR COLOR");
+            }
+        }
+        else {
+            throw new SyntaxException("INVALID CHANNEL SELECTOR SYMBOL");
+        }
+    }
+
     PixelSelector pixel_selector() throws SyntaxException, LexicalException {
         IToken firstToken = t;
         Expr x = null;
         Expr y = null;
 
-        consume(); // consuming '['
+        match(Kind.LSQUARE);
         x = expr();
         match(Kind.COMMA);
         y = expr();
@@ -439,9 +473,8 @@ public class Parser implements IParser{
             if (isKind(Kind.LSQUARE)) { // Predict of <pixel_selector>
                 ps = pixel_selector();
             }
-            if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
-                color = ColorChannel.getColor(t);
-                consume();
+            if (isKind(Kind.COLON)) {
+                color = channel_selector();
             }
         }
         return new LValue(firstToken, ident, ps, color);

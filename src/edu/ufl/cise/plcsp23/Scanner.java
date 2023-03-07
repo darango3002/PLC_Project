@@ -68,7 +68,7 @@ public class Scanner implements IScanner {
     }
 
     //constructor
-    public Scanner(String input){
+    public Scanner(String input) {
         this.input = input;
         inputChars = Arrays.copyOf(input.toCharArray(), input.length() + 1);
         pos = 0;
@@ -104,6 +104,7 @@ public class Scanner implements IScanner {
         int startColumn = -1;
 
         while(true) {
+            System.out.println(ch);
             switch (state) {
                 case START -> {
                     tokenStart = pos;
@@ -146,6 +147,7 @@ public class Scanner implements IScanner {
                         // SINGLE CHAR OPERATORS OR SEPARATORS
                         case '.' -> {
                             nextChar();
+//                            System.out.println("NEW DOT");
                             return new Token(Kind.DOT, tokenStart, 1, inputChars, startLine, startColumn);
                         }
                         case ',' -> {
@@ -243,15 +245,6 @@ public class Scanner implements IScanner {
                                 nextChar();
                             }
                         }
-
-                        /*
-                        TODO:
-                         CHECK FOR STRING_LIT START
-                         ADD ESCAPE SEQUENCES,
-                         MORE?
-
-                         Add BITAND and BITOR
-                         */
 
 
                         default -> {
@@ -400,6 +393,11 @@ public class Scanner implements IScanner {
                             return new Token(reservedWords.get(tempToken), tokenStart, length, inputChars, startLine, startColumn);
                         }
                         else {
+//                            System.out.print("NEW IDENT: ");
+//                            for (int i = tokenStart; i < tokenStart + length; i++) {
+//                                System.out.print(inputChars[i]);
+//                            }
+//                            System.out.println("");
                             return new Token(Kind.IDENT, tokenStart, length, inputChars, startLine, startColumn);
                         }
                     }
