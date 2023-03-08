@@ -419,16 +419,12 @@ public class Parser implements IParser{
     ColorChannel channel_selector() throws SyntaxException, LexicalException {
 //        IToken firstToken = t;
 
-        if (isKind(Kind.COLON)) {
-            if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
-                return ColorChannel.getColor(t);
-            }
-            else {
-                throw new SyntaxException("INVALID CHANNEL SELECTOR COLOR");
-            }
+        match(Kind.COLON);
+        if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
+            return ColorChannel.getColor(t);
         }
         else {
-            throw new SyntaxException("INVALID CHANNEL SELECTOR SYMBOL");
+            throw new SyntaxException("INVALID CHANNEL SELECTOR COLOR");
         }
     }
 
@@ -467,8 +463,8 @@ public class Parser implements IParser{
         IToken firstToken = t;
         Expr width = null;
         Expr height = null;
-
-        consume(); // consumes '['
+        
+        match(Kind.LSQUARE);
         width = expr();
         match(Kind.COMMA);
         height = expr();
