@@ -167,7 +167,7 @@ public class Parser implements IParser{
             return Type.getType(t);
         }
         else {
-            throw new SyntaxException("INVALID TYPE" + t.getKind());
+            throw new SyntaxException("INVALID TYPE " + t.getKind());
         }
     }
 
@@ -214,7 +214,7 @@ public class Parser implements IParser{
         if (isTypeKind()) {
             nameDef = name_def();
 
-            if (isKind(Kind.EQ)) {
+            if (isKind(Kind.ASSIGN)) {
                 consume();
                 initializer = expr();
             }
@@ -530,7 +530,7 @@ public class Parser implements IParser{
 
         if (isKind(Kind.IDENT)) {
             lv = l_value();
-            match(Kind.EQ);
+            match(Kind.ASSIGN);
             e = expr();
             return new AssignmentStatement(firstToken, lv, e);
         }
