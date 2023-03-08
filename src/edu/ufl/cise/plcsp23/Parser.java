@@ -161,6 +161,15 @@ public class Parser implements IParser{
         return paramList;
     }
 
+    Type type() throws SyntaxException, LexicalException {
+        if (isKind(Kind.RES_image, Kind.RES_pixel, Kind.RES_int, Kind.RES_string, Kind.RES_void)) {
+            return Type.getType(t);
+        }
+        else {
+            throw new SyntaxException("INVALID TYPE" + t.getKind());
+        }
+    }
+
     // <name_def> ::= <Type> (IDENT | <dimension> IDENT)
     NameDef name_def() throws SyntaxException, LexicalException {
         IToken firstToken = t;
