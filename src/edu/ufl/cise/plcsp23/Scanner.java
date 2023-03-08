@@ -104,7 +104,6 @@ public class Scanner implements IScanner {
         int startColumn = -1;
 
         while(true) {
-            System.out.println(ch);
             switch (state) {
                 case START -> {
                     tokenStart = pos;

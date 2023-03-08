@@ -5,6 +5,7 @@ import edu.ufl.cise.plcsp23.ast.*;
 import edu.ufl.cise.plcsp23.IToken.Kind;
 import edu.ufl.cise.plcsp23.ast.Dimension;
 
+import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -439,8 +440,9 @@ public class Parser implements IParser{
 
         match(Kind.COLON);
         if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
+            ColorChannel color = ColorChannel.getColor(t);
             consume();
-            return ColorChannel.getColor(t);
+            return color;
         }
         else {
             throw new SyntaxException("INVALID CHANNEL SELECTOR COLOR");
