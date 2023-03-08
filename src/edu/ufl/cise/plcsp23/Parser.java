@@ -94,6 +94,9 @@ public class Parser implements IParser{
         else
             throw new SyntaxException("Expected Kind of Type! Received Kind: " + t.getKind());
 
+        if (!isKind(Kind.EOF))
+            throw new SyntaxException("Expected EOF token after end of program, but " + t.getKind() + " was received");
+
         return p;
     }
 

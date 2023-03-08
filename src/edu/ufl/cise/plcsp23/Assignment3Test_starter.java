@@ -952,4 +952,128 @@ class Assignment3Test_starter {
 		});
 	}
 
+	@Test
+	void andNoReservedIdents() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void void() {}
+					""";
+			assertThrows(SyntaxException.class, () -> {
+				@SuppressWarnings("unused")
+				AST ast = getAST(input);
+			});
+		});
+	}
+
+	@Test
+	void andNoDeclarationAfterStmt() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						things = stuff.
+						int things.
+					}
+					""";
+			assertThrows(SyntaxException.class, () -> {
+				@SuppressWarnings("unused")
+				AST ast = getAST(input);
+			});
+		});
+	}
+
+	@Test
+	void andANormalProgram() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						int things = stuff.
+					}
+					""";
+			@SuppressWarnings("unused")
+			AST ast = getAST(input);
+		});
+	}
+
+	@Test
+	void andNestedWhileLoops() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						while thisIsTrue {
+							while thatNotTrue {
+								while theseAreTrue {
+									write 1.
+									write 2.
+									write 3.
+								}.
+							}.
+						}.
+					}
+					""";
+			@SuppressWarnings("unused")
+			AST ast = getAST(input);
+		});
+	}
+
+	@Test
+	void andMissingBraces() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						int i = 0.
+					""";
+			assertThrows(SyntaxException.class, () -> {
+				@SuppressWarnings("unused")
+				AST ast = getAST(input);
+			});
+		});
+	}
+
+	@Test
+	void andIncorrectOrder() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						int i = 0.
+						write i.
+						int j = 0.
+					}
+					""";
+			assertThrows(SyntaxException.class, () -> {
+				@SuppressWarnings("unused")
+				AST ast = getAST(input);
+			});
+		});
+	}
+
+	@Test
+	void andARealWhileExpression() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						while ((((if a ? b ? (if c ? d ? e))))) {
+							write f.
+						}.
+					}
+					""";
+			@SuppressWarnings("unused")
+			AST ast = getAST(input);
+		});
+	}
+
+	@Test
+	void andSomethingAfter() throws PLCException {
+		assertTimeoutPreemptively(Duration.ofMillis(TIMEOUT_MILLIS), () -> {
+			String input = """
+					void program() {
+						int i = 0.
+					} hi
+					""";
+			assertThrows(SyntaxException.class, () -> {
+				@SuppressWarnings("unused")
+				AST ast = getAST(input);
+			});
+		});
+	}
+
 }
