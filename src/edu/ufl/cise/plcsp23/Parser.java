@@ -420,6 +420,12 @@ public class Parser implements IParser{
             consume();
         }
         // TODO: IMPLEMENT ExpandedPixel and PixelFunctionExpr within PrimaryExpr
+        else if (isKind(Kind.LSQUARE)) {
+            e = expanded_pixel();
+        }
+        else if (isKind(Kind.RES_x_cart, Kind.RES_y_cart, Kind.RES_a_polar, Kind.RES_r_polar)) {
+            e = pixel_function_expr();
+        }
         else
             throw new SyntaxException("EMPTY EXPRESSION");
 
@@ -427,7 +433,6 @@ public class Parser implements IParser{
     }
 
     ColorChannel channel_selector() throws SyntaxException, LexicalException {
-//        IToken firstToken = t;
 
         match(Kind.COLON);
         if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
@@ -468,6 +473,18 @@ public class Parser implements IParser{
         match(Kind.RSQUARE);
 
         return new ExpandedPixelExpr(t, expr1, expr2, expr3);
+    }
+
+    PixelFuncExpr pixel_function_expr() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Kind function = null;
+        PixelSelector selector = null;
+
+        function = t.getKind();
+        consume();
+        selector = pixel_selector();
+
+        return new PixelFuncExpr(firstToken, function, selector);
     }
 
     Dimension dimension() throws SyntaxException, LexicalException {
