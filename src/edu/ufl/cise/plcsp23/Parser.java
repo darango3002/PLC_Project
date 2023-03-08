@@ -421,6 +421,7 @@ public class Parser implements IParser{
 
         match(Kind.COLON);
         if (isKind(Kind.RES_red, Kind.RES_grn, Kind.RES_blu)) {
+            consume();
             return ColorChannel.getColor(t);
         }
         else {
@@ -463,7 +464,7 @@ public class Parser implements IParser{
         IToken firstToken = t;
         Expr width = null;
         Expr height = null;
-        
+
         match(Kind.LSQUARE);
         width = expr();
         match(Kind.COMMA);
