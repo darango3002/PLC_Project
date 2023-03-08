@@ -446,6 +446,23 @@ public class Parser implements IParser{
         return new PixelSelector(firstToken, x, y);
     }
 
+    ExpandedPixelExpr expanded_pixel() throws SyntaxException, LexicalException {
+        IToken firstToken = t;
+        Expr expr1 = null;
+        Expr expr2 = null;
+        Expr expr3 = null;
+
+        match(Kind.LSQUARE);
+        expr1 = expr();
+        match(Kind.COMMA);
+        expr2 = expr();
+        match(Kind.COMMA);
+        expr3 = expr();
+        match(Kind.RSQUARE);
+
+        return new ExpandedPixelExpr(t, expr1, expr2, expr3);
+    }
+
     Dimension dimension() throws SyntaxException, LexicalException {
         IToken firstToken = t;
         Expr width = null;
