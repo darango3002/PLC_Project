@@ -365,7 +365,7 @@ public class Parser implements IParser{
         return e;
     }
 
-    UnaryExprPostfix unary_expr_postfix() throws LexicalException, SyntaxException {
+    Expr unary_expr_postfix() throws LexicalException, SyntaxException {
         IToken firstToken = t;
         Expr prim = primary_expr();
         PixelSelector pixel = null;
@@ -376,6 +376,9 @@ public class Parser implements IParser{
         }
         if (isKind(Kind.COLON)) {
             channel = channel_selector();
+        }
+        if (pixel == null && channel == null) {
+            return prim;
         }
         return new UnaryExprPostfix(t, prim, pixel, channel);
     }
