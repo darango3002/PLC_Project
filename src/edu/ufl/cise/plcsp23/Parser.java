@@ -163,6 +163,7 @@ public class Parser implements IParser{
 
     Type type() throws SyntaxException, LexicalException {
         if (isKind(Kind.RES_image, Kind.RES_pixel, Kind.RES_int, Kind.RES_string, Kind.RES_void)) {
+            consume();
             return Type.getType(t);
         }
         else {
