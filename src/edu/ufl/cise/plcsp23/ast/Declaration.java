@@ -18,8 +18,6 @@ public class Declaration extends AST {
 	final NameDef nameDef;
 	final Expr initializer;
 
-	private boolean assigned = false;
-
 	public Declaration(IToken firstToken, NameDef nameDef, Expr initializer) {
 		super(firstToken);
 		this.nameDef = nameDef;
@@ -37,14 +35,6 @@ public class Declaration extends AST {
 
 	public Type getType() {
 		return getNameDef().getType();
-	}
-
-	public void setAssigned(boolean val) {
-		assigned = val;
-	}
-
-	public boolean isAssigned() {
-		return assigned;
 	}
 
 	public NameDef getNameDef() {

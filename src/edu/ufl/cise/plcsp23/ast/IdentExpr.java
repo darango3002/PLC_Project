@@ -14,6 +14,8 @@ import edu.ufl.cise.plcsp23.IToken;
 import edu.ufl.cise.plcsp23.PLCException;
 
 public class IdentExpr extends Expr {
+
+	NameDef nameDef = null;
 		
 	public IdentExpr(IToken firstToken) {
 		super(firstToken);
@@ -22,6 +24,14 @@ public class IdentExpr extends Expr {
 	@Override
 	public Object visit(ASTVisitor v, Object arg) throws PLCException {
 		return v.visitIdentExpr(this,arg);
+	}
+
+	public NameDef getNameDef() {
+		return nameDef;
+	}
+
+	public void setNameDef(NameDef nd) {
+		nameDef = nd;
 	}
 	
 	public String getName() {

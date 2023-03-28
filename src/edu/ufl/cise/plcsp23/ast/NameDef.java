@@ -18,6 +18,8 @@ public class NameDef extends AST {
 	final Type type;
 	final Dimension dimension;
 	final Ident ident;
+
+	private boolean assigned = false;
 	
 	public NameDef(IToken firstToken, Type type, Dimension dimension, Ident ident) {
 		super(firstToken);
@@ -41,6 +43,14 @@ public class NameDef extends AST {
 
 	public Ident getIdent() {
 		return ident;
+	}
+
+	public void setAssigned(boolean val) {
+		assigned = val;
+	}
+
+	public boolean isAssigned() {
+		return assigned;
 	}
 
 	@Override

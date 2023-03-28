@@ -553,7 +553,7 @@ public class Parser implements IParser{
             block = block();
             return new WhileStatement(firstToken, guard, block);
         }
-        else if (isKind(Kind.RETURN)) {
+        else if (isKind(Kind.COLON)) {
             consume();
             e = expr();
             return new ReturnStatement(firstToken, e);

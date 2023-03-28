@@ -76,7 +76,7 @@ class TypeCheckTest_starter {
 	}
 	
 	@Test
-	void t3() throws PLCException{
+	void t3() throws PLCException{ // two declarations of f in the same scope level
 		String input = """
 				string f(int f, string f){}
 				""";
@@ -95,7 +95,7 @@ class TypeCheckTest_starter {
 	}
 	
 	@Test
-	void t5() throws PLCException{
+	void t5() throws PLCException{ // two declarations of s in the same scope level
 		String input = """
 				string f(int f, string s){
 				  int s.
@@ -106,7 +106,7 @@ class TypeCheckTest_starter {
 	}
 	
 	@Test
-	void t6() throws PLCException{
+	void t6() throws PLCException{ // void variable type
 		String input = """
 				void f(void xx){}
 				""";
@@ -114,7 +114,7 @@ class TypeCheckTest_starter {
 	}
 	
 	@Test
-	void t7() throws PLCException{
+	void t7() throws PLCException{ // return type doesnt match program type
 		String input = """
 				void f(){
 				  int xx = 2.
@@ -128,7 +128,7 @@ class TypeCheckTest_starter {
 	}
 	
 	@Test
-	void t8() throws PLCException{
+	void t8() throws PLCException{ // initializer refers to declaration name
 		String input = """
 				void f(){
 				  int xx = 2+xx.
