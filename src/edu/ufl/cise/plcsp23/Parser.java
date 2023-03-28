@@ -553,6 +553,11 @@ public class Parser implements IParser{
             block = block();
             return new WhileStatement(firstToken, guard, block);
         }
+        else if (isKind(Kind.RETURN)) {
+            consume();
+            e = expr();
+            return new ReturnStatement(firstToken, e);
+        }
         else
             throw new SyntaxException("Expected Kind.IDENT (LValue), Kind.RES_write, or Kind.RES_while. Received Kind :" + t.getKind());
 

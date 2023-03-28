@@ -9,6 +9,8 @@
  */
 
 package edu.ufl.cise.plcsp23;
+import edu.ufl.cise.plcsp23.ast.ASTVisitor;
+import edu.ufl.cise.plcsp23.ast.TypeCheckVisitor;
 
 public class CompilerComponentFactory {
 
@@ -25,5 +27,9 @@ public class CompilerComponentFactory {
 		throws LexicalException {
 		Scanner scanner =  new Scanner(input);
 		return new Parser(scanner);
+	}
+
+	public static ASTVisitor makeTypeChecker() {
+		return new TypeCheckVisitor();
 	}
 }

@@ -79,7 +79,8 @@ public interface IToken {
 		ERROR,
 		RES_red,
 		RES_grn,
-		RES_blu
+		RES_blu,
+		RETURN
 	}
 
 

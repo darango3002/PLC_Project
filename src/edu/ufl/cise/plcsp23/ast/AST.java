@@ -29,6 +29,10 @@ public abstract class AST {
 		return firstToken;
 	}
 
+	public IToken.SourceLocation getSourceLoc() {
+		return firstToken.getSourceLocation();
+	}
+
 	public int getLine() {
 		return firstToken.getSourceLocation().line();
 	}
