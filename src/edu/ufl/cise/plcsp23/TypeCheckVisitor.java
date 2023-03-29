@@ -264,7 +264,6 @@ public class TypeCheckVisitor implements ASTVisitor {
         String name = identExpr.getName();
         NameDef nameDef = symbolTable.lookup(name);
         check(nameDef != null, identExpr, "undefined identifier " + name);
-        identExpr.setNameDef(nameDef);
         Type type = nameDef.getType();
         identExpr.setType(type);
         return type;
@@ -351,6 +350,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitAssignmentStatement(AssignmentStatement statementAssign, Object arg) throws PLCException {
+        String name = statementAssign.getLv().getIdent().getName();
+        NameDef nameDef = symbolTable.lookup(name);
+
+        check(assignmentCompatible(nameDef.getType(), statementAssign.getE().getType()), statementAssign, "left and right values do not match");
         return null;
     }
 

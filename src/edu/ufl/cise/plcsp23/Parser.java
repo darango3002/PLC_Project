@@ -554,7 +554,7 @@ public class Parser implements IParser{
             return new WhileStatement(firstToken, guard, block);
         }
         else if (isKind(Kind.COLON)) {
-            match(Kind.COLON);
+            consume();
             e = expr();
             return new ReturnStatement(firstToken, e);
         }
