@@ -4,6 +4,7 @@ import edu.ufl.cise.plcsp23.PLCException;
 import edu.ufl.cise.plcsp23.IToken;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     public static class SymbolTable {
         int currentNum;
         int nextNum;
-        Stack<Integer> scopeStack;
+        Stack<Integer> scopeStack = new Stack<Integer>();
 
         void enterScope() {
             currentNum = nextNum++;
@@ -59,12 +60,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitProgram(Program program, Object arg) throws PLCException {
-        return null;
+        symbolTable.enterScope();
+        List<NameDef> paramList = program.getParamList();
+        Block block = program.getBlock();
+        for (NameDef parameter : paramList) {
+            parameter.visit(this, arg);
+        }
+        block.visit(this, arg);
+        symbolTable.closeScope();
+        return program;
     }
 
     @Override
     public Object visitBlock(Block block, Object arg) throws PLCException {
-        return null;
+        List<Declaration> declarations = block.getDecList();
+        List<Statement> statements = block.getStatementList();
+        for (Declaration declaration : declarations) {
+            declaration.visit(this, arg);
+        }
+        for (Statement statement : statements) {
+            statement.visit(this, arg);
+        }
+        return block;
     }
 
     @Override
@@ -87,7 +104,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitNameDef(NameDef nameDef, Object arg) throws PLCException {
         String name = nameDef.getIdent().getName();
-        boolean inserted = symbolTable.insert(name,nameDef);
+        boolean inserted = symbolTable.insert(name, nameDef);
         check(inserted, nameDef, "variable " + name + "already declared");
 
         if (nameDef.getDimension() != null) {
