@@ -1,6 +1,7 @@
 package edu.ufl.cise.plcsp23.ast;
 import edu.ufl.cise.plcsp23.TypeCheckException;
 import edu.ufl.cise.plcsp23.PLCException;
+import edu.ufl.cise.plcsp23.IToken;
 
 import java.util.HashMap;
 import java.util.Stack;
@@ -120,22 +121,83 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitPixelFuncExpr(PixelFuncExpr pixelFuncExpr, Object arg) throws PLCException {
-        return null;
+        pixelFuncExpr.setType(Type.INT);
+        return Type.INT;
     }
 
     @Override
     public Object visitPredeclaredVarExpr(PredeclaredVarExpr predeclaredVarExpr, Object arg) throws PLCException {
-        return null;
+        predeclaredVarExpr.setType(Type.INT);
+        return Type.INT;
     }
 
     @Override
     public Object visitConditionalExpr(ConditionalExpr conditionalExpr, Object arg) throws PLCException {
-        return null;
+        Expr expr1 = conditionalExpr.getGuard();
+        Expr expr2 = conditionalExpr.getTrueCase();
+        Expr expr3 = conditionalExpr.getFalseCase();
+
+        check(expr1.getType() == Type.INT, conditionalExpr, "Expr1 type != INT");
+        check(expr1.getType() == expr2.getType(), conditionalExpr, "Expr1 type != INT");
+
+        conditionalExpr.setType(expr1.getType());
+        return expr1.getType();
     }
 
     @Override
-    public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws PLCException {
-        return null;
+    public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws Exception,PLCException {
+        IToken.Kind op = binaryExpr.getOp();
+        Type leftType = (Type) binaryExpr.getLeft().visit(this, arg);
+        Type rightType = (Type) binaryExpr.getRight().visit(this, arg);
+        Type resultType = null;
+        switch(op) {
+            case BITOR,BITAND -> {
+                check(leftType == Type.PIXEL && rightType == Type.PIXEL, binaryExpr, "incompatible types for comparison");
+                resultType = Type.PIXEL;
+            }
+            case OR,AND,LT,GT,LE,GE -> {
+                check(leftType == Type.INT && rightType == Type.INT, binaryExpr, "incompatible types for comparison");
+                resultType = Type.INT;
+            }
+            case EQ -> {
+                if (leftType == Type.INT && rightType == Type.INT) resultType = Type.INT;
+                else if (leftType == Type.PIXEL && rightType == Type.PIXEL) resultType = Type.INT;
+                else if (leftType == Type.IMAGE && rightType == Type.IMAGE) resultType = Type.INT;
+                else if (leftType == Type.STRING && rightType == Type.STRING) resultType = Type.INT;
+                else check(false, binaryExpr, "incompatible types for operator");
+            }
+            case EXP     -> {
+                if (leftType == Type.INT && rightType == Type.INT) resultType = Type.INT;
+                else if (leftType == Type.PIXEL && rightType == Type.INT) resultType = Type.PIXEL;
+                else check(false, binaryExpr, "incompatible types for operator");
+            }
+            case PLUS -> {
+                if (leftType == Type.INT && rightType == Type.INT) resultType = Type.INT;
+                else if (leftType == Type.PIXEL && rightType == Type.PIXEL) resultType = Type.PIXEL;
+                else if (leftType == Type.IMAGE && rightType == Type.IMAGE) resultType = Type.IMAGE;
+                else if (leftType == Type.STRING && rightType == Type.STRING) resultType = Type.STRING;
+                else check(false, binaryExpr, "incompatible types for operator");
+            }
+            case MINUS -> {
+                if (leftType == Type.INT && rightType == Type.INT) resultType = Type.INT;
+                else if (leftType == Type.PIXEL && rightType == Type.PIXEL) resultType = Type.PIXEL;
+                else if (leftType == Type.IMAGE && rightType == Type.IMAGE) resultType = Type.IMAGE;
+                else check(false, binaryExpr, "incompatible types for operator");
+            }
+            case TIMES,DIV,MOD -> {
+                if (leftType == Type.INT && rightType == Type.INT) resultType = Type.INT;
+                else if (leftType == Type.PIXEL && rightType == Type.PIXEL) resultType = Type.PIXEL;
+                else if (leftType == Type.IMAGE && rightType == Type.IMAGE) resultType = Type.IMAGE;
+                else if (leftType == Type.PIXEL && rightType == Type.INT) resultType = Type.PIXEL;
+                else if (leftType == Type.IMAGE && rightType == Type.INT) resultType = Type.IMAGE;
+                else check(false, binaryExpr, "incompatible types for operator");
+            }
+            default -> {
+                throw new Exception("compiler error");
+            }
+        }
+        binaryExpr.setType(resultType);
+        return resultType;
     }
 
     @Override

@@ -16,7 +16,7 @@ public interface ASTVisitor {
 
 	Object visitAssignmentStatement(AssignmentStatement statementAssign, Object arg) throws PLCException;
 
-	Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws PLCException;
+	Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws Exception,PLCException;
 
 	Object visitBlock(Block block, Object arg) throws PLCException;
 
