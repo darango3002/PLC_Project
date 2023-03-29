@@ -1,7 +1,8 @@
-package edu.ufl.cise.plcsp23.ast;
+package edu.ufl.cise.plcsp23;
 import edu.ufl.cise.plcsp23.TypeCheckException;
 import edu.ufl.cise.plcsp23.PLCException;
 import edu.ufl.cise.plcsp23.IToken;
+import edu.ufl.cise.plcsp23.ast.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class TypeCheckVisitor implements ASTVisitor {
         }
         // TODO: Eventually need to update HashMap to handle while loops (nested scopes)
         // use ArrayList<Pair<Declaration, int (scopeID)>> to implement the values
-        HashMap<String,NameDef> entries = new HashMap<>();
+        HashMap<String, NameDef> entries = new HashMap<>();
         //returns true if name successfully inserted in symbol table, false if already present
         public boolean insert(String name, NameDef nameDef) {
             return (entries.putIfAbsent(name,nameDef) == null);
@@ -239,12 +240,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitStringLitExpr(StringLitExpr stringLitExpr, Object arg) throws PLCException {
-        return null;
+        stringLitExpr.setType(Type.STRING);
+        return Type.STRING;
     }
 
     @Override
     public Object visitNumLitExpr(NumLitExpr numLitExpr, Object arg) throws PLCException {
-        return null;
+        numLitExpr.setType(Type.INT);
+        return Type.INT;
     }
 
     @Override
@@ -273,21 +276,45 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitPixelSelector(PixelSelector pixelSelector, Object arg) throws PLCException {
+        Expr x = pixelSelector.getX();
+        Expr y = pixelSelector.getY();
+
+        check(x.getType() == Type.INT, pixelSelector, "Expr x != INT");
+        check(y.getType() == Type.INT, pixelSelector, "Expr y != INT");
+
         return null;
     }
 
     @Override
     public Object visitExpandedPixelExpr(ExpandedPixelExpr expandedPixelExpr, Object arg) throws PLCException {
-        return null;
+        Expr red = expandedPixelExpr.getRedExpr();
+        Expr green = expandedPixelExpr.getGrnExpr();
+        Expr blue = expandedPixelExpr.getBluExpr();
+
+        check(red.getType() == Type.INT, expandedPixelExpr, "Expr red != INT");
+        check(green.getType() == Type.INT, expandedPixelExpr, "Expr grn != INT");
+        check(blue.getType() == Type.INT, expandedPixelExpr, "Expr blu != INT");
+
+        expandedPixelExpr.setType(Type.PIXEL);
+        return Type.PIXEL;
     }
 
     @Override
     public Object visitDimension(Dimension dimension, Object arg) throws PLCException {
+        Expr height = dimension.getHeight();
+        Expr width = dimension.getWidth();
+
+        check(height.getType() == Type.INT, dimension, "Expr height != INT");
+        check(width.getType() == Type.INT, dimension, "Expr width != INT");
         return null;
     }
 
     @Override
     public Object visitLValue(LValue lValue, Object arg) throws PLCException {
+        String name = lValue.getIdent().getName();
+        check(symbolTable.lookup(name) != null, lValue, "ident not declared or not visible in scope");
+        Type identType = lValue.getIdent().getDef().getType();
+
         return null;
     }
 

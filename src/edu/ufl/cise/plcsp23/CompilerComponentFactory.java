@@ -10,7 +10,6 @@
 
 package edu.ufl.cise.plcsp23;
 import edu.ufl.cise.plcsp23.ast.ASTVisitor;
-import edu.ufl.cise.plcsp23.ast.TypeCheckVisitor;
 
 public class CompilerComponentFactory {
 
