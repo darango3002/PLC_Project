@@ -33,10 +33,6 @@ public class Declaration extends AST {
 		return getNameDef().getIdent().getName();
 	}
 
-	public Type getType() {
-		return getNameDef().getType();
-	}
-
 	public NameDef getNameDef() {
 		return nameDef;
 	}

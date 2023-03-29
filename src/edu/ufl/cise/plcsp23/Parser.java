@@ -55,7 +55,7 @@ public class Parser implements IParser{
             consume();
         }
         else
-            throw new SyntaxException("current token " + t + "does not match expected token: " + k);
+            throw new SyntaxException("current token " + t.getTokenString() + " does not match expected token: " + k);
     }
 
     void consume() throws LexicalException {
@@ -135,7 +135,7 @@ public class Parser implements IParser{
         List<Statement> statementList = new ArrayList<Statement>();
         Statement s = null;
 
-        while (isKind(Kind.IDENT, Kind.RES_write, Kind.RES_while)) { // predict of <statement>
+        while (isKind(Kind.IDENT, Kind.RES_write, Kind.RES_while, Kind.COLON)) { // predict of <statement>
             s = statement();
             match(Kind.DOT);
 
@@ -554,7 +554,7 @@ public class Parser implements IParser{
             return new WhileStatement(firstToken, guard, block);
         }
         else if (isKind(Kind.COLON)) {
-            consume();
+            match(Kind.COLON);
             e = expr();
             return new ReturnStatement(firstToken, e);
         }

@@ -37,10 +37,9 @@ public class TypeCheckVisitor implements ASTVisitor {
         }
     }
     SymbolTable symbolTable = new SymbolTable();
-    private void check(boolean condition, AST node, String message) throws TypeCheckException {
-        System.out.println("CHECK");
+    private void check(boolean condition, AST node, String message)
+            throws TypeCheckException {
         if (! condition) { throw new TypeCheckException(message, node.getSourceLoc()); }
-        System.out.println("CHECKDONE");
     }
 
     private boolean assignmentCompatible(Type targetType, Type rhsType) {
@@ -94,16 +93,17 @@ public class TypeCheckVisitor implements ASTVisitor {
         if (initializer != null) {
             //infer type of initializer
             Type initializerType = (Type) initializer.visit(this,arg);
-            check(assignmentCompatible(declaration.getType(), initializerType) ,declaration,
+            check(assignmentCompatible(declaration.getNameDef().getType(), initializerType) ,declaration,
                     "type of expression and declared type do not match");
         }
-        if (declaration.getType() == Type.IMAGE) {
+        if (declaration.getNameDef().getType() == Type.IMAGE) {
             check(declaration.getInitializer() != null || declaration.getNameDef().getDimension() != null,
                     declaration, "Initializer and/or dimension cannot be null || Init: " + declaration.getInitializer()
                             + ", Dim: " + declaration.getNameDef().getDimension());
         }
 
         declaration.getNameDef().visit(this, arg);
+
         return null;
     }
 
@@ -138,9 +138,7 @@ public class TypeCheckVisitor implements ASTVisitor {
             if (unaryExprPostfix.getPixel() != null && unaryExprPostfix.getColor() != null)
                 resultType = Type.INT;
         }
-        else if (primaryExpr.getType() == Type.INT) {
-            resultType = (Type) visitNumLitExpr((NumLitExpr)primaryExpr, arg);
-        }
+
         return resultType;
     }
 
@@ -253,7 +251,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitNumLitExpr(NumLitExpr numLitExpr, Object arg) throws PLCException {
-        System.out.println("HELLO");
         numLitExpr.setType(Type.INT);
         return Type.INT;
     }
