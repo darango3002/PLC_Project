@@ -37,9 +37,10 @@ public class TypeCheckVisitor implements ASTVisitor {
         }
     }
     SymbolTable symbolTable = new SymbolTable();
-    private void check(boolean condition, AST node, String message)
-            throws TypeCheckException {
+    private void check(boolean condition, AST node, String message) throws TypeCheckException {
+        System.out.println("CHECK");
         if (! condition) { throw new TypeCheckException(message, node.getSourceLoc()); }
+        System.out.println("CHECKDONE");
     }
 
     private boolean assignmentCompatible(Type targetType, Type rhsType) {
@@ -101,6 +102,8 @@ public class TypeCheckVisitor implements ASTVisitor {
                     declaration, "Initializer and/or dimension cannot be null || Init: " + declaration.getInitializer()
                             + ", Dim: " + declaration.getNameDef().getDimension());
         }
+
+        declaration.getNameDef().visit(this, arg);
         return null;
     }
 
@@ -135,7 +138,9 @@ public class TypeCheckVisitor implements ASTVisitor {
             if (unaryExprPostfix.getPixel() != null && unaryExprPostfix.getColor() != null)
                 resultType = Type.INT;
         }
-
+        else if (primaryExpr.getType() == Type.INT) {
+            resultType = (Type) visitNumLitExpr((NumLitExpr)primaryExpr, arg);
+        }
         return resultType;
     }
 
@@ -248,6 +253,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitNumLitExpr(NumLitExpr numLitExpr, Object arg) throws PLCException {
+        System.out.println("HELLO");
         numLitExpr.setType(Type.INT);
         return Type.INT;
     }
