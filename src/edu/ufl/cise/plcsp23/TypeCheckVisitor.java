@@ -10,12 +10,12 @@ import java.util.Stack;
 import java.util.ArrayList;
 
 public class TypeCheckVisitor implements ASTVisitor {
+
+    Type programType = null;
     public static class SymbolTable {
         int currentNum;
         int nextNum;
         Stack<Integer> scopeStack = new Stack<Integer>();
-
-        // program type variable
 
         void enterScope() {
             currentNum = nextNum++;
@@ -64,6 +64,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitProgram(Program program, Object arg) throws PLCException {
         symbolTable.enterScope();
+        programType = program.getType();
         List<NameDef> paramList = program.getParamList();
         Block block = program.getBlock();
         for (NameDef parameter : paramList) {
@@ -362,8 +363,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
-        // check return type is same as program type
-        return null;
+        Expr returnExpr = returnStatement.getE();
+        check(returnExpr.getType() == programType, returnStatement, "program type does not match return expr type");
+        return returnStatement.getE().getType();
     }
 
     @Override
