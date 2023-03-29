@@ -14,8 +14,8 @@ import edu.ufl.cise.plcsp23.IToken;
 import edu.ufl.cise.plcsp23.PLCException;
 
 public class Ident extends AST {
-	
-	NameDef def;
+
+	NameDef def = null;
 
 	public Ident(IToken firstToken) {
 		super(firstToken);
@@ -25,7 +25,7 @@ public class Ident extends AST {
 	public Object visit(ASTVisitor v, Object arg) throws PLCException {
 		return v.visitIdent(this, arg);
 	}
-	
+
 	public String getName() {
 		return firstToken.getTokenString();
 	}

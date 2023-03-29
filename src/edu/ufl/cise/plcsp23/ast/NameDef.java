@@ -45,14 +45,6 @@ public class NameDef extends AST {
 		return ident;
 	}
 
-	public void setAssigned(boolean val) {
-		assigned = val;
-	}
-
-	public boolean isAssigned() {
-		return assigned;
-	}
-
 	@Override
 	public String toString() {
 		return "NameDef [type=" + type + ", dimension=" + dimension + ", ident=" + ident + "]";

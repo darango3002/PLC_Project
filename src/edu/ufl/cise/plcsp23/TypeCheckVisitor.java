@@ -15,6 +15,8 @@ public class TypeCheckVisitor implements ASTVisitor {
         int nextNum;
         Stack<Integer> scopeStack = new Stack<Integer>();
 
+        // program type variable
+
         void enterScope() {
             currentNum = nextNum++;
             scopeStack.push(currentNum);
@@ -111,8 +113,8 @@ public class TypeCheckVisitor implements ASTVisitor {
         if (nameDef.getDimension() != null) {
             check(nameDef.getType() == Type.IMAGE, nameDef, "type is not IMAGE");
         }
-        check(nameDef.getType() != null, nameDef, "type of nameDef is null");
-        check(symbolTable.lookup(name) == null, nameDef, "name was previously defined in scope");
+        check(nameDef.getType() != Type.VOID, nameDef, "type of nameDef cannot be void");
+        check(symbolTable.lookup(name) != null, nameDef, "name was previously defined in scope");
 
         return nameDef.getType();
     }
@@ -255,7 +257,6 @@ public class TypeCheckVisitor implements ASTVisitor {
         String name = identExpr.getName();
         NameDef nameDef = symbolTable.lookup(name);
         check(nameDef != null, identExpr, "undefined identifier " + name);
-        check(nameDef.isAssigned(), identExpr, "using uninitialized variable");
         identExpr.setNameDef(nameDef);
         Type type = nameDef.getType();
         identExpr.setType(type);
@@ -312,10 +313,33 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitLValue(LValue lValue, Object arg) throws PLCException {
         String name = lValue.getIdent().getName();
-        check(symbolTable.lookup(name) != null, lValue, "ident not declared or not visible in scope");
-        Type identType = lValue.getIdent().getDef().getType();
+        NameDef nameDef = symbolTable.lookup(name);
+        Type returnType = null;
+        check(nameDef != null, lValue, "ident not declared or not visible in scope");
+        Type identType = nameDef.getType();
 
-        return null;
+        if (identType == Type.IMAGE) {
+            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.IMAGE;
+            else if(lValue.getPixelSelector() != null && lValue.getColor() == null) returnType = Type.PIXEL;
+            else if(lValue.getPixelSelector() == null && lValue.getColor() != null) returnType = Type.IMAGE;
+            else if(lValue.getPixelSelector() != null && lValue.getColor() != null) returnType = Type.INT;
+            else check(false, lValue, "invalid combination of pixel and channel selector");
+        }
+        else if (identType == Type.PIXEL) {
+            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.PIXEL;
+            else if(lValue.getPixelSelector() == null && lValue.getColor() != null) returnType = Type.INT;
+            else check(false, lValue, "invalid combination of pixel and channel selector");
+        }
+        else if (identType == Type.STRING) {
+            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.STRING;
+            else check(false, lValue, "invalid combination of pixel and channel selector");
+        }
+        else if (identType == Type.INT) {
+            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.INT;
+            else check(false, lValue, "invalid combination of pixel and channel selector");
+        }
+
+        return returnType;
     }
 
     @Override
@@ -335,6 +359,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
+        // check return type is same as program type
         return null;
     }
 
