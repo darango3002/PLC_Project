@@ -29,10 +29,6 @@ public class Declaration extends AST {
 		return v.visitDeclaration(this, arg);
 	}
 
-	public String getName() {
-		return getNameDef().getIdent().getName();
-	}
-
 	public NameDef getNameDef() {
 		return nameDef;
 	}
