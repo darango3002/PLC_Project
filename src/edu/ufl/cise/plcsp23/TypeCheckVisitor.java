@@ -115,6 +115,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
         if (nameDef.getDimension() != null) {
             check(nameDef.getType() == Type.IMAGE, nameDef, "type is not IMAGE");
+            visitDimension(nameDef.getDimension(), arg);
         }
         check(nameDef.getType() != Type.VOID, nameDef, "type of nameDef cannot be void");
         check(symbolTable.lookup(name) != null, nameDef, "name was previously defined in scope");
@@ -159,6 +160,8 @@ public class TypeCheckVisitor implements ASTVisitor {
         Expr expr1 = conditionalExpr.getGuard();
         Expr expr2 = conditionalExpr.getTrueCase();
         Expr expr3 = conditionalExpr.getFalseCase();
+
+        System.out.println(expr1.getType());
 
         check(expr1.getType() == Type.INT, conditionalExpr, "Expr1 type != INT");
         check(expr1.getType() == expr2.getType(), conditionalExpr, "Expr1 type != INT");
