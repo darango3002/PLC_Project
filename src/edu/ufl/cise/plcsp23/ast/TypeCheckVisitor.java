@@ -145,7 +145,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     }
 
     @Override
-    public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws Exception,PLCException {
+    public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws PLCException {
         IToken.Kind op = binaryExpr.getOp();
         Type leftType = (Type) binaryExpr.getLeft().visit(this, arg);
         Type rightType = (Type) binaryExpr.getRight().visit(this, arg);
@@ -193,7 +193,7 @@ public class TypeCheckVisitor implements ASTVisitor {
                 else check(false, binaryExpr, "incompatible types for operator");
             }
             default -> {
-                throw new Exception("compiler error");
+                throw new PLCException("compiler error");
             }
         }
         binaryExpr.setType(resultType);
