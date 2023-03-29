@@ -171,7 +171,7 @@ class TypeCheckTest_starter {
 		String input = """
 				void f(string url){
 				image[300,400] i = url.
-				image[300,400] j. 
+				image[300,400] j.
 				j[a,r] = i[a_polar[y,x], r_polar[x,y]].
 				write j.
 				}
@@ -252,7 +252,7 @@ class TypeCheckTest_starter {
 				}.
 				i = 3.
 				while i > 0 {
-				   write xx.  
+				   write xx.
 				   i = i -1.
 				}.
 				: i.

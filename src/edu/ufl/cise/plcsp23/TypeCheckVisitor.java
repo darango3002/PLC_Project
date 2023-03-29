@@ -1,7 +1,4 @@
 package edu.ufl.cise.plcsp23;
-import edu.ufl.cise.plcsp23.TypeCheckException;
-import edu.ufl.cise.plcsp23.PLCException;
-import edu.ufl.cise.plcsp23.IToken;
 import edu.ufl.cise.plcsp23.ast.*;
 
 import java.util.HashMap;
@@ -13,27 +10,75 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     Type programType = null;
     public static class SymbolTable {
+
+        public static class Pair<N extends AST, I extends Number> {
+            NameDef nameDef;
+            Integer scopeID;
+
+            Pair(NameDef nameDef, Integer scopeID) {
+                this.nameDef = nameDef;
+                this.scopeID = scopeID;
+            }
+
+            public NameDef getNameDef() {
+                return nameDef;
+            }
+            public Integer getScopeID() {
+                return scopeID;
+            }
+        }
         int currentNum;
-        int nextNum;
         Stack<Integer> scopeStack = new Stack<Integer>();
 
         void enterScope() {
-            currentNum = nextNum++;
+            currentNum++;
             scopeStack.push(currentNum);
         }
         void closeScope() {
             currentNum = scopeStack.pop();
         }
-        // TODO: Eventually need to update HashMap to handle while loops (nested scopes)
-        // use ArrayList<Pair<Declaration, int (scopeID)>> to implement the values
-        HashMap<String, NameDef> entries = new HashMap<>();
+        HashMap<String, ArrayList<Pair<NameDef, Integer>>> entries = new HashMap<>();
         //returns true if name successfully inserted in symbol table, false if already present
         public boolean insert(String name, NameDef nameDef) {
-            return (entries.putIfAbsent(name,nameDef) == null);
+            if (entries.get(name) == null) {
+                ArrayList<Pair<NameDef, Integer>> temp = new ArrayList<>();
+                Pair<NameDef, Integer> pair = new Pair<>(nameDef, currentNum);
+                temp.add(pair);
+                entries.put(name, temp);
+                return true;
+            }
+            else{
+                ArrayList<Pair<NameDef, Integer>> temp = entries.get(name);
+                for (Pair<NameDef, Integer> pair : temp) {
+                    if (pair.getScopeID() == currentNum) {
+                        return false;
+                    }
+                }
+                Pair<NameDef, Integer> pair = new Pair<>(nameDef, currentNum);
+                temp.add(pair);
+                entries.put(name, temp);
+                return true;
+            }
         }
         //returns NameDef if present, or null if name not declared.
+        //closest NameDef to scopeNum
         public NameDef lookup(String name) {
-            return entries.get(name);
+            if (entries.get(name) == null) return null;
+            else {
+                ArrayList<Pair<NameDef, Integer>> temp = entries.get(name);
+                Pair<NameDef, Integer> current = null;
+                int highScope = 0;
+                for (Pair<NameDef, Integer> pair : temp) {
+                    if (pair.getScopeID() > currentNum) {
+                        continue;
+                    }
+                    else if (pair.scopeID > highScope) {
+                        current = pair;
+                        highScope = pair.getScopeID();
+                    }
+                }
+                return current.getNameDef();
+            }
         }
     }
     SymbolTable symbolTable = new SymbolTable();
@@ -94,8 +139,10 @@ public class TypeCheckVisitor implements ASTVisitor {
         if (initializer != null) {
             //infer type of initializer
             Type initializerType = (Type) initializer.visit(this,arg);
+
             check(assignmentCompatible(declaration.getNameDef().getType(), initializerType) ,declaration,
                     "type of expression and declared type do not match");
+            initializer.setType(initializerType);
         }
         if (declaration.getNameDef().getType() == Type.IMAGE) {
             check(declaration.getInitializer() != null || declaration.getNameDef().getDimension() != null,
@@ -103,9 +150,7 @@ public class TypeCheckVisitor implements ASTVisitor {
                             + ", Dim: " + declaration.getNameDef().getDimension());
         }
 
-        declaration.getNameDef().visit(this, arg);
-
-        return null;
+        return declaration.getNameDef().visit(this, arg);
     }
 
     @Override
@@ -127,6 +172,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitUnaryExprPostFix(UnaryExprPostfix unaryExprPostfix, Object arg) throws PLCException {
         Expr primaryExpr = unaryExprPostfix.getPrimary();
+        primaryExpr.setType((Type)primaryExpr.visit(this, arg));
         Type resultType = null;
         if (primaryExpr.getType() == Type.PIXEL){
             if (unaryExprPostfix.getPixel() == null && unaryExprPostfix.getColor() != null)
@@ -135,9 +181,9 @@ public class TypeCheckVisitor implements ASTVisitor {
         else if (primaryExpr.getType() == Type.IMAGE) {
             if (unaryExprPostfix.getPixel() == null && unaryExprPostfix.getColor() != null)
                 resultType = Type.IMAGE;
-            if (unaryExprPostfix.getPixel() != null && unaryExprPostfix.getColor() == null)
+            else if (unaryExprPostfix.getPixel() != null && unaryExprPostfix.getColor() == null)
                 resultType = Type.PIXEL;
-            if (unaryExprPostfix.getPixel() != null && unaryExprPostfix.getColor() != null)
+            else if (unaryExprPostfix.getPixel() != null && unaryExprPostfix.getColor() != null)
                 resultType = Type.INT;
         }
 
@@ -158,14 +204,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitConditionalExpr(ConditionalExpr conditionalExpr, Object arg) throws PLCException {
-        Expr expr1 = conditionalExpr.getGuard();
-        Expr expr2 = conditionalExpr.getTrueCase();
-        Expr expr3 = conditionalExpr.getFalseCase();
+        Expr expr0 = conditionalExpr.getGuard();
+        expr0.setType((Type)expr0.visit(this,arg));
+        Expr expr1 = conditionalExpr.getTrueCase();
+        expr1.setType((Type)expr1.visit(this,arg));
+        Expr expr2 = conditionalExpr.getFalseCase();
+        expr2.setType((Type)expr2.visit(this,arg));
 
-        System.out.println(expr1.getType());
-
-        check(expr1.getType() == Type.INT, conditionalExpr, "Expr1 type != INT");
-        check(expr1.getType() == expr2.getType(), conditionalExpr, "Expr1 type != INT");
+        check(expr0.getType() == Type.INT, conditionalExpr, "Expr0 type != INT :: " + expr1.getFirstToken().getTokenString() +" ");
+        check(expr1.getType() == expr2.getType(), conditionalExpr, "Types Expr1 != Expr2");
 
         conditionalExpr.setType(expr1.getType());
         return expr1.getType();
@@ -237,7 +284,7 @@ public class TypeCheckVisitor implements ASTVisitor {
             case BANG -> {
                 if (exprType == Type.INT) resultType = Type.INT;
                 else if (exprType == Type.PIXEL) resultType = Type.PIXEL;
-                check(false, unaryExpr, "invalid Expr type");
+                else check(false, unaryExpr, "invalid Expr type");
             }
             case MINUS, RES_cos, RES_sin, RES_atan -> {
                 check(exprType == Type.INT, unaryExpr, "invalid Expr type");
@@ -284,7 +331,9 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitPixelSelector(PixelSelector pixelSelector, Object arg) throws PLCException {
         Expr x = pixelSelector.getX();
+        x.setType((Type)x.visit(this,arg));
         Expr y = pixelSelector.getY();
+        y.setType((Type)y.visit(this,arg));
 
         check(x.getType() == Type.INT, pixelSelector, "Expr x != INT");
         check(y.getType() == Type.INT, pixelSelector, "Expr y != INT");
@@ -295,8 +344,11 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitExpandedPixelExpr(ExpandedPixelExpr expandedPixelExpr, Object arg) throws PLCException {
         Expr red = expandedPixelExpr.getRedExpr();
+        red.setType((Type)red.visit(this,arg));
         Expr green = expandedPixelExpr.getGrnExpr();
+        green.setType((Type)green.visit(this,arg));
         Expr blue = expandedPixelExpr.getBluExpr();
+        blue.setType((Type)blue.visit(this,arg));
 
         check(red.getType() == Type.INT, expandedPixelExpr, "Expr red != INT");
         check(green.getType() == Type.INT, expandedPixelExpr, "Expr grn != INT");
@@ -309,7 +361,9 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitDimension(Dimension dimension, Object arg) throws PLCException {
         Expr height = dimension.getHeight();
+        height.setType((Type)height.visit(this,arg));
         Expr width = dimension.getWidth();
+        width.setType((Type)width.visit(this,arg));
 
         check(height.getType() == Type.INT, dimension, "Expr height != INT");
         check(width.getType() == Type.INT, dimension, "Expr width != INT");
@@ -352,6 +406,8 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitAssignmentStatement(AssignmentStatement statementAssign, Object arg) throws PLCException {
         String name = statementAssign.getLv().getIdent().getName();
         NameDef nameDef = symbolTable.lookup(name);
+        Type exprType = (Type) statementAssign.getE().visit(this, arg);
+        statementAssign.getE().setType(exprType);
 
         check(assignmentCompatible(nameDef.getType(), statementAssign.getE().getType()), statementAssign, "left and right values do not match");
         return null;
@@ -359,19 +415,30 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitWriteStatement(WriteStatement statementWrite, Object arg) throws PLCException {
+        Expr e = statementWrite.getE();
+        e.setType((Type)e.visit(this,arg));
         return null;
     }
 
     @Override
     public Object visitWhileStatement(WhileStatement whileStatement, Object arg) throws PLCException {
+        Expr e = whileStatement.getGuard();
+        Block block = whileStatement.getBlock();
+        e.setType((Type)e.visit(this,arg));
+
+        check(e.getType() == Type.INT, whileStatement, "Guard EXPR != INT");
+        symbolTable.enterScope();
+        block.visit(this, arg);
+        symbolTable.closeScope();
         return null;
     }
 
     @Override
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr returnExpr = returnStatement.getE();
+        returnStatement.getE().setType((Type) returnExpr.visit(this, arg));
         check(returnExpr.getType() == programType, returnStatement, "program type does not match return expr type");
-        return returnStatement.getE().getType();
+        return returnExpr.getType();
     }
 
     @Override
