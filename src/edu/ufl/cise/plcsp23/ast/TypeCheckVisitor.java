@@ -219,7 +219,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitUnaryExpr(UnaryExpr unaryExpr, Object arg) throws PLCException {
-        return null;
+        IToken.Kind op = unaryExpr.getOp();
+        Type exprType = (Type) unaryExpr.getE().visit(this, arg);
+        Type resultType = null;
+
+        switch(op) {
+            case BANG -> {
+                if (exprType == Type.INT) resultType = Type.INT;
+                else if (exprType == Type.PIXEL) resultType = Type.PIXEL;
+                check(false, unaryExpr, "invalid Expr type");
+            }
+            case MINUS, RES_cos, RES_sin, RES_atan -> {
+                check(exprType == Type.INT, unaryExpr, "invalid Expr type");
+                resultType = Type.INT;
+            }
+        }
+        return resultType;
     }
 
     @Override
@@ -246,12 +261,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitZExpr(ZExpr zExpr, Object arg) throws PLCException {
-        return null;
+        zExpr.setType(Type.INT);
+        return Type.INT;
     }
 
     @Override
     public Object visitRandomExpr(RandomExpr randomExpr, Object arg) throws PLCException {
-        return null;
+        randomExpr.setType(Type.INT);
+        return Type.INT;
     }
 
     @Override
