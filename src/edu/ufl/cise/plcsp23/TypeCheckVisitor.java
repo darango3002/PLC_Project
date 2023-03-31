@@ -72,12 +72,16 @@ public class TypeCheckVisitor implements ASTVisitor {
                     if (pair.getScopeID() > currentNum) {
                         continue;
                     }
-                    else if (pair.scopeID > highScope) {
+                    else if (pair.scopeID > highScope && scopeStack.search(pair.scopeID) != -1) {
                         current = pair;
                         highScope = pair.getScopeID();
                     }
                 }
-                return current.getNameDef();
+
+                if (current != null)
+                    return current.getNameDef();
+                else
+                    return null;
             }
         }
     }
@@ -157,7 +161,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitNameDef(NameDef nameDef, Object arg) throws PLCException {
         String name = nameDef.getIdent().getName();
         boolean inserted = symbolTable.insert(name, nameDef);
-        check(inserted, nameDef, "variable " + name + "already declared");
+        check(inserted, nameDef, "variable " + name + " already declared");
 
         if (nameDef.getDimension() != null) {
             check(nameDef.getType() == Type.IMAGE, nameDef, "type is not IMAGE");
