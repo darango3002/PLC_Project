@@ -441,7 +441,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr returnExpr = returnStatement.getE();
         returnStatement.getE().setType((Type) returnExpr.visit(this, arg));
-        check(returnExpr.getType() == programType, returnStatement, "program type does not match return expr type");
+        check(returnExpr.getType() == programType, returnStatement, "program type (" + programType.name() + ") does not match return expr type (" + returnExpr.getType().name() + ")");
         return returnExpr.getType();
     }
 
