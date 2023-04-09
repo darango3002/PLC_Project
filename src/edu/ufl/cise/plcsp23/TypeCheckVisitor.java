@@ -102,10 +102,12 @@ public class TypeCheckVisitor implements ASTVisitor {
         else if (targetType == Type.INT) {
             return (rhsType == Type.INT || rhsType == Type.PIXEL);
         }
-        else { // LValueType == Type.STRING
+        else if (targetType == Type.STRING){
             return (rhsType == Type.STRING || rhsType == Type.INT || rhsType == Type.PIXEL
                     || rhsType == Type.IMAGE);
         }
+        else
+            return false;
     }
 
     // VISITOR METHODS
@@ -178,6 +180,10 @@ public class TypeCheckVisitor implements ASTVisitor {
         Expr primaryExpr = unaryExprPostfix.getPrimary();
         primaryExpr.setType((Type)primaryExpr.visit(this, arg));
         Type resultType = null;
+        if (unaryExprPostfix.getPixel() != null) {
+            unaryExprPostfix.getPixel().visit(this, arg);
+        }
+
         if (primaryExpr.getType() == Type.PIXEL){
             if (unaryExprPostfix.getPixel() == null && unaryExprPostfix.getColor() != null)
                 resultType = Type.INT;
@@ -196,6 +202,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitPixelFuncExpr(PixelFuncExpr pixelFuncExpr, Object arg) throws PLCException {
+        pixelFuncExpr.getSelector().visit(this, arg);
         pixelFuncExpr.setType(Type.INT);
         return Type.INT;
     }
@@ -226,7 +233,9 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws PLCException {
         IToken.Kind op = binaryExpr.getOp();
         Type leftType = (Type) binaryExpr.getLeft().visit(this, arg);
+        binaryExpr.getLeft().setType(leftType);
         Type rightType = (Type) binaryExpr.getRight().visit(this, arg);
+        binaryExpr.getRight().setType(rightType);
         Type resultType = null;
         switch(op) {
             case BITOR,BITAND -> {
@@ -282,6 +291,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitUnaryExpr(UnaryExpr unaryExpr, Object arg) throws PLCException {
         IToken.Kind op = unaryExpr.getOp();
         Type exprType = (Type) unaryExpr.getE().visit(this, arg);
+        unaryExpr.getE().setType(exprType);
         Type resultType = null;
 
         switch(op) {
@@ -382,6 +392,9 @@ public class TypeCheckVisitor implements ASTVisitor {
         check(nameDef != null, lValue, "ident not declared or not visible in scope");
         Type identType = nameDef.getType();
 
+        if(lValue.getPixelSelector() != null)
+            lValue.getPixelSelector().visit(this, arg);
+
         if (identType == Type.IMAGE) {
             if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.IMAGE;
             else if(lValue.getPixelSelector() != null && lValue.getColor() == null) returnType = Type.PIXEL;
@@ -412,8 +425,9 @@ public class TypeCheckVisitor implements ASTVisitor {
         NameDef nameDef = symbolTable.lookup(name);
         Type exprType = (Type) statementAssign.getE().visit(this, arg);
         statementAssign.getE().setType(exprType);
+        Type lvalueType = (Type) statementAssign.getLv().visit(this, arg);
 
-        check(assignmentCompatible(nameDef.getType(), statementAssign.getE().getType()), statementAssign, "left and right values do not match");
+        check(assignmentCompatible(lvalueType, statementAssign.getE().getType()), statementAssign, "left and right values do not match (L) " + nameDef.getType()+ " (R) " + statementAssign.getE().getType());
         return null;
     }
 
@@ -441,7 +455,8 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr returnExpr = returnStatement.getE();
         returnStatement.getE().setType((Type) returnExpr.visit(this, arg));
-        check(returnExpr.getType() == programType, returnStatement, "program type (" + programType.name() + ") does not match return expr type (" + returnExpr.getType().name() + ")");
+        boolean t = assignmentCompatible(programType,returnStatement.getE().getType());
+        check(t, returnStatement, "program type (" + programType.name() + ") is not compatible w/ expr type (" + returnExpr.getType().name() + ")");
         return returnExpr.getType();
     }
 

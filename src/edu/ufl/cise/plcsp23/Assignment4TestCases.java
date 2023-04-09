@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import org.junit.jupiter.api.Test;
-import edu.ufl.cise.plcsp23.*;
+
 import edu.ufl.cise.plcsp23.IToken.Kind;
 import edu.ufl.cise.plcsp23.ast.AST;
 import edu.ufl.cise.plcsp23.ast.ASTVisitor;
@@ -47,7 +47,7 @@ import edu.ufl.cise.plcsp23.ast.ZExpr;
 import edu.ufl.cise.plcsp23.ast.ReturnStatement;
 
 import static edu.ufl.cise.plcsp23.IToken.Kind.*;
-class Assignment4Test_generated{
+class Assignment4Tests{
     static final int TIMEOUT_MILLIS = 1000;
     /** Constructs a scanner and parser for the given input string, scans and parses the input and returns and AST.
      *
@@ -446,11 +446,11 @@ void f(){}
             assertThat("",v15,instanceOf(PixelSelector.class));
             Expr v16 = ((PixelSelector)v15).getX();
             assertThat("",v16,instanceOf(PredeclaredVarExpr.class));
-            assertEquals(null, v16.getType());
+            assertEquals(Type.INT, v16.getType());
             assertEquals(RES_x,((PredeclaredVarExpr)v16).getKind());
             Expr v17 = ((PixelSelector)v15).getY();
             assertThat("",v17,instanceOf(PredeclaredVarExpr.class));
-            assertEquals(null, v17.getType());
+            assertEquals(Type.INT, v17.getType());
             assertEquals(RES_y,((PredeclaredVarExpr)v17).getKind());
             assertNull(((LValue)v13).getColor());
             Expr v18 = ((AssignmentStatement)v12).getE();
@@ -541,11 +541,11 @@ void f(string url){
             assertThat("",v24,instanceOf(PixelSelector.class));
             Expr v25 = ((PixelSelector)v24).getX();
             assertThat("",v25,instanceOf(PredeclaredVarExpr.class));
-            assertEquals(null, v25.getType());
+            assertEquals(Type.INT, v25.getType());
             assertEquals(RES_a,((PredeclaredVarExpr)v25).getKind());
             Expr v26 = ((PixelSelector)v24).getY();
             assertThat("",v26,instanceOf(PredeclaredVarExpr.class));
-            assertEquals(null, v26.getType());
+            assertEquals(Type.INT, v26.getType());
             assertEquals(RES_r,((PredeclaredVarExpr)v26).getKind());
             assertNull(((LValue)v22).getColor());
             Expr v27 = ((AssignmentStatement)v21).getE();
@@ -1205,10 +1205,10 @@ int f() {
             assertThat("",v20,instanceOf(PixelSelector.class));
             Expr v21 = ((PixelSelector)v20).getX();
             checkNumLit(v21,100);
-            assertEquals(null, v21.getType());
+            assertEquals(Type.INT, v21.getType());
             Expr v22 = ((PixelSelector)v20).getY();
             checkNumLit(v22,100);
-            assertEquals(null, v22.getType());
+            assertEquals(Type.INT, v22.getType());
             assertNull(((LValue)v18).getColor());
             Expr v23 = ((AssignmentStatement)v17).getE();
             checkUnary(v23,Kind.BANG);
@@ -1785,10 +1785,10 @@ void f() {
             assertThat("",v27,instanceOf(PixelSelector.class));
             Expr v28 = ((PixelSelector)v27).getX();
             checkNumLit(v28,200);
-            assertEquals(null, v28.getType());
+            assertEquals(Type.INT, v28.getType());
             Expr v29 = ((PixelSelector)v27).getY();
             checkNumLit(v29,200);
-            assertEquals(null, v29.getType());
+            assertEquals(Type.INT, v29.getType());
             assertNull(((LValue)v25).getColor());
             Expr v30 = ((AssignmentStatement)v24).getE();
 
@@ -1922,10 +1922,10 @@ void f() {
             assertThat("",v25,instanceOf(PixelSelector.class));
             Expr v26 = ((PixelSelector)v25).getX();
             checkNumLit(v26,1);
-            assertEquals(null, v26.getType());
+            assertEquals(Type.INT, v26.getType());
             Expr v27 = ((PixelSelector)v25).getY();
             checkNumLit(v27,1);
-            assertEquals(null, v27.getType());
+            assertEquals(Type.INT, v27.getType());
             assertNull(((LValue)v23).getColor());
             Expr v28 = ((AssignmentStatement)v22).getE();
 
@@ -2042,10 +2042,10 @@ void f() {
             assertThat("",v17,instanceOf(PixelSelector.class));
             Expr v18 = ((PixelSelector)v17).getX();
             checkNumLit(v18,1);
-            assertEquals(null, v18.getType());
+            assertEquals(Type.INT, v18.getType());
             Expr v19 = ((PixelSelector)v17).getY();
             checkNumLit(v19,1);
-            assertEquals(null, v19.getType());
+            assertEquals(Type.INT, v19.getType());
             assertNull(((LValue)v15).getColor());
             Expr v20 = ((AssignmentStatement)v14).getE();
 
@@ -2091,10 +2091,10 @@ void f() {
             assertThat("",v34,instanceOf(PixelSelector.class));
             Expr v35 = ((PixelSelector)v34).getX();
             checkNumLit(v35,1);
-            assertEquals(null, v35.getType());
+            assertEquals(Type.INT, v35.getType());
             Expr v36 = ((PixelSelector)v34).getY();
             checkNumLit(v36,1);
-            assertEquals(null, v36.getType());
+            assertEquals(Type.INT, v36.getType());
             assertNull(((LValue)v32).getColor());
             Expr v37 = ((AssignmentStatement)v31).getE();
 
@@ -2140,10 +2140,10 @@ void f() {
             assertThat("",v51,instanceOf(PixelSelector.class));
             Expr v52 = ((PixelSelector)v51).getX();
             checkNumLit(v52,1);
-            assertEquals(null, v52.getType());
+            assertEquals(Type.INT, v52.getType());
             Expr v53 = ((PixelSelector)v51).getY();
             checkNumLit(v53,1);
-            assertEquals(null, v53.getType());
+            assertEquals(Type.INT, v53.getType());
             assertNull(((LValue)v49).getColor());
             Expr v54 = ((AssignmentStatement)v48).getE();
 
@@ -2243,10 +2243,10 @@ void f() {
             assertThat("",v86,instanceOf(PixelSelector.class));
             Expr v87 = ((PixelSelector)v86).getX();
             checkNumLit(v87,1);
-            assertEquals(null, v87.getType());
+            assertEquals(Type.INT, v87.getType());
             Expr v88 = ((PixelSelector)v86).getY();
             checkNumLit(v88,1);
-            assertEquals(null, v88.getType());
+            assertEquals(Type.INT, v88.getType());
             assertNull(((LValue)v84).getColor());
             Expr v89 = ((AssignmentStatement)v83).getE();
 
@@ -2280,10 +2280,10 @@ void f() {
             assertThat("",v99,instanceOf(PixelSelector.class));
             Expr v100 = ((PixelSelector)v99).getX();
             checkNumLit(v100,1);
-            assertEquals(null, v100.getType());
+            assertEquals(Type.INT, v100.getType());
             Expr v101 = ((PixelSelector)v99).getY();
             checkNumLit(v101,1);
-            assertEquals(null, v101.getType());
+            assertEquals(Type.INT, v101.getType());
             assertNull(((LValue)v97).getColor());
             Expr v102 = ((AssignmentStatement)v96).getE();
 
@@ -2317,10 +2317,10 @@ void f() {
             assertThat("",v112,instanceOf(PixelSelector.class));
             Expr v113 = ((PixelSelector)v112).getX();
             checkNumLit(v113,1);
-            assertEquals(null, v113.getType());
+            assertEquals(Type.INT, v113.getType());
             Expr v114 = ((PixelSelector)v112).getY();
             checkNumLit(v114,1);
-            assertEquals(null, v114.getType());
+            assertEquals(Type.INT, v114.getType());
             assertNull(((LValue)v110).getColor());
             Expr v115 = ((AssignmentStatement)v109).getE();
 
@@ -2504,10 +2504,10 @@ void f() {
             assertThat("",v34,instanceOf(PixelSelector.class));
             Expr v35 = ((PixelSelector)v34).getX();
             checkNumLit(v35,1);
-            assertEquals(null, v35.getType());
+            assertEquals(Type.INT, v35.getType());
             Expr v36 = ((PixelSelector)v34).getY();
             checkNumLit(v36,1);
-            assertEquals(null, v36.getType());
+            assertEquals(Type.INT, v36.getType());
             assertEquals( ColorChannel.grn,v32.getColor());
             Expr v37 = ((AssignmentStatement)v31).getE();
             checkIdentExpr(v37,"cc");
@@ -3014,16 +3014,16 @@ void f() {
     int i = 2.
     while i < 2{
         int j.
-    }
+    }.
     while i > 3 {
         int t = 2.
         while t > 4 {
             j = 5.
-        }
-    }
+        }.
+    }.
 }
 """;
-            assertThrows(SyntaxException.class, () -> {
+            assertThrows(TypeCheckException.class, () -> {
                 @SuppressWarnings("unused")
                 AST ast = getAST(input);
             });
@@ -3038,11 +3038,11 @@ void f() {
     int i = 2.
     while i < 2{
         int j.
-    }
+    }.
     j = 2.
 }
 """;
-            assertThrows(SyntaxException.class, () -> {
+            assertThrows(TypeCheckException.class, () -> {
                 @SuppressWarnings("unused")
                 AST ast = getAST(input);
             });
