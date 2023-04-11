@@ -158,6 +158,18 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitConditionalExpr(ConditionalExpr conditionalExpr, Object arg) throws PLCException {
+        Expr guard = conditionalExpr.getGuard();
+        Expr trueCase = conditionalExpr.getTrueCase();
+        Expr falseCase = conditionalExpr.getFalseCase();
+
+        sb.append("(");
+        guard.visit(this,arg);
+        sb.append(" != 0 ? ");
+        trueCase.visit(this, arg);
+        sb.append(" : ");
+        falseCase.visit(this, arg);
+        sb.append(")");
+
         return null;
     }
 
@@ -210,7 +222,10 @@ public class CodeGenerator implements ASTVisitor {
     @Override
     public Object visitStringLitExpr(StringLitExpr stringLitExpr, Object arg) throws PLCException {
         String name = stringLitExpr.getValue();
+
+        sb.append("\"");
         sb.append(name);
+        sb.append("\"");
         return null;
     }
 
