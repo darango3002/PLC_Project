@@ -143,17 +143,17 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitUnaryExprPostFix(UnaryExprPostfix unaryExprPostfix, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     @Override
     public Object visitPixelFuncExpr(PixelFuncExpr pixelFuncExpr, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     @Override
     public Object visitPredeclaredVarExpr(PredeclaredVarExpr predeclaredVarExpr, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     @Override
@@ -190,10 +190,11 @@ public class CodeGenerator implements ASTVisitor {
             sb.append(" != 0) ? 1 : 0");
         }
         else if (isKind(opKind, Kind.LT, Kind.GT, Kind.LE, Kind.GE, Kind.EQ)) {
+            sb.append("(");
             expr0.visit(this, arg);
             sb.append(javaOp);
             expr1.visit(this, arg);
-            sb.append(") ? 1 : 0");
+            sb.append(") ? 1 : 0)");
         }
         else if (isKind(opKind, Kind.EXP)) { // is an exponent
             // maybe needs import?
@@ -216,7 +217,7 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitUnaryExpr(UnaryExpr unaryExpr, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     @Override
@@ -256,17 +257,17 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitPixelSelector(PixelSelector pixelSelector, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     @Override
     public Object visitExpandedPixelExpr(ExpandedPixelExpr expandedPixelExpr, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     @Override
     public Object visitDimension(Dimension dimension, Object arg) throws PLCException {
-        return null;
+        throw new PLCException("not yet implemented");
     }
 
     // STATEMENTS //
