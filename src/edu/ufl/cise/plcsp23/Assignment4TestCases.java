@@ -452,7 +452,7 @@ void f(){}
             assertThat("",v17,instanceOf(PredeclaredVarExpr.class));
             assertEquals(Type.INT, v17.getType());
             assertEquals(RES_y,((PredeclaredVarExpr)v17).getKind());
-            assertNull(((LValue)v13).getColor());
+            assertNull(((LValue)v13).getChannelSelector());
             Expr v18 = ((AssignmentStatement)v12).getE();
             assertThat("",v18,instanceOf(ExpandedPixelExpr.class));
             assertEquals(Type.PIXEL, v18.getType());
@@ -547,7 +547,7 @@ void f(string url){
             assertThat("",v26,instanceOf(PredeclaredVarExpr.class));
             assertEquals(Type.INT, v26.getType());
             assertEquals(RES_r,((PredeclaredVarExpr)v26).getKind());
-            assertNull(((LValue)v22).getColor());
+            assertNull(((LValue)v22).getChannelSelector());
             Expr v27 = ((AssignmentStatement)v21).getE();
             assertThat("",v27,instanceOf(UnaryExprPostfix.class));
             assertEquals(Type.PIXEL, v27.getType());
@@ -776,7 +776,7 @@ string s(string s0, string s1, int ok){
             Ident v26 = v25.getIdent();
             checkIdent(v26,"i");
             assertNull(v25.getPixelSelector());
-            assertNull(((LValue)v25).getColor());
+            assertNull(((LValue)v25).getChannelSelector());
             Expr v27 = ((AssignmentStatement)v24).getE();
 
             checkBinary(v27,Kind.MINUS);
@@ -884,7 +884,7 @@ string s(string s0, string s1, int ok){
             Ident v29 = v28.getIdent();
             checkIdent(v29,"i");
             assertNull(v28.getPixelSelector());
-            assertNull(((LValue)v28).getColor());
+            assertNull(((LValue)v28).getChannelSelector());
             Expr v30 = ((AssignmentStatement)v27).getE();
 
             checkBinary(v30,Kind.MINUS);
@@ -902,7 +902,7 @@ string s(string s0, string s1, int ok){
             Ident v35 = v34.getIdent();
             checkIdent(v35,"i");
             assertNull(v34.getPixelSelector());
-            assertNull(((LValue)v34).getColor());
+            assertNull(((LValue)v34).getChannelSelector());
             Expr v36 = ((AssignmentStatement)v33).getE();
             checkNumLit(v36,3);
             assertEquals(Type.INT, v36.getType());
@@ -946,7 +946,7 @@ string s(string s0, string s1, int ok){
             Ident v53 = v52.getIdent();
             checkIdent(v53,"i");
             assertNull(v52.getPixelSelector());
-            assertNull(((LValue)v52).getColor());
+            assertNull(((LValue)v52).getChannelSelector());
             Expr v54 = ((AssignmentStatement)v51).getE();
 
             checkBinary(v54,Kind.MINUS);
@@ -1209,7 +1209,7 @@ int f() {
             Expr v22 = ((PixelSelector)v20).getY();
             checkNumLit(v22,100);
             assertEquals(Type.INT, v22.getType());
-            assertNull(((LValue)v18).getColor());
+            assertNull(((LValue)v18).getChannelSelector());
             Expr v23 = ((AssignmentStatement)v17).getE();
             checkUnary(v23,Kind.BANG);
             assertEquals(Type.PIXEL, v23.getType());
@@ -1368,7 +1368,7 @@ pixel f() {
             Ident v29 = v28.getIdent();
             checkIdent(v29,"xx");
             assertNull(v28.getPixelSelector());
-            assertNull(((LValue)v28).getColor());
+            assertNull(((LValue)v28).getChannelSelector());
             Expr v30 = ((AssignmentStatement)v27).getE();
 
             checkBinary(v30,Kind.BITAND);
@@ -1789,7 +1789,7 @@ void f() {
             Expr v29 = ((PixelSelector)v27).getY();
             checkNumLit(v29,200);
             assertEquals(Type.INT, v29.getType());
-            assertNull(((LValue)v25).getColor());
+            assertNull(((LValue)v25).getChannelSelector());
             Expr v30 = ((AssignmentStatement)v24).getE();
 
             checkBinary(v30,Kind.PLUS);
@@ -1831,7 +1831,7 @@ void f() {
             Ident v43 = v42.getIdent();
             checkIdent(v43,"bb");
             assertNull(v42.getPixelSelector());
-            assertNull(((LValue)v42).getColor());
+            assertNull(((LValue)v42).getChannelSelector());
             Expr v44 = ((AssignmentStatement)v41).getE();
 
             checkBinary(v44,Kind.PLUS);
@@ -1901,7 +1901,7 @@ void f() {
             Ident v18 = v17.getIdent();
             checkIdent(v18,"aa");
             assertNull(v17.getPixelSelector());
-            assertNull(((LValue)v17).getColor());
+            assertNull(((LValue)v17).getChannelSelector());
             Expr v19 = ((AssignmentStatement)v16).getE();
 
             checkBinary(v19,Kind.MINUS);
@@ -1926,7 +1926,7 @@ void f() {
             Expr v27 = ((PixelSelector)v25).getY();
             checkNumLit(v27,1);
             assertEquals(Type.INT, v27.getType());
-            assertNull(((LValue)v23).getColor());
+            assertNull(((LValue)v23).getChannelSelector());
             Expr v28 = ((AssignmentStatement)v22).getE();
 
             checkBinary(v28,Kind.MINUS);
@@ -1968,7 +1968,7 @@ void f() {
             Ident v41 = v40.getIdent();
             checkIdent(v41,"bb");
             assertNull(v40.getPixelSelector());
-            assertNull(((LValue)v40).getColor());
+            assertNull(((LValue)v40).getChannelSelector());
             Expr v42 = ((AssignmentStatement)v39).getE();
 
             checkBinary(v42,Kind.MINUS);
@@ -2046,7 +2046,7 @@ void f() {
             Expr v19 = ((PixelSelector)v17).getY();
             checkNumLit(v19,1);
             assertEquals(Type.INT, v19.getType());
-            assertNull(((LValue)v15).getColor());
+            assertNull(((LValue)v15).getChannelSelector());
             Expr v20 = ((AssignmentStatement)v14).getE();
 
             checkBinary(v20,Kind.TIMES);
@@ -2095,7 +2095,7 @@ void f() {
             Expr v36 = ((PixelSelector)v34).getY();
             checkNumLit(v36,1);
             assertEquals(Type.INT, v36.getType());
-            assertNull(((LValue)v32).getColor());
+            assertNull(((LValue)v32).getChannelSelector());
             Expr v37 = ((AssignmentStatement)v31).getE();
 
             checkBinary(v37,Kind.DIV);
@@ -2144,7 +2144,7 @@ void f() {
             Expr v53 = ((PixelSelector)v51).getY();
             checkNumLit(v53,1);
             assertEquals(Type.INT, v53.getType());
-            assertNull(((LValue)v49).getColor());
+            assertNull(((LValue)v49).getChannelSelector());
             Expr v54 = ((AssignmentStatement)v48).getE();
 
             checkBinary(v54,Kind.MOD);
@@ -2186,7 +2186,7 @@ void f() {
             Ident v67 = v66.getIdent();
             checkIdent(v67,"aa");
             assertNull(v66.getPixelSelector());
-            assertNull(((LValue)v66).getColor());
+            assertNull(((LValue)v66).getChannelSelector());
             Expr v68 = ((AssignmentStatement)v65).getE();
 
             checkBinary(v68,Kind.TIMES);
@@ -2204,7 +2204,7 @@ void f() {
             Ident v73 = v72.getIdent();
             checkIdent(v73,"aa");
             assertNull(v72.getPixelSelector());
-            assertNull(((LValue)v72).getColor());
+            assertNull(((LValue)v72).getChannelSelector());
             Expr v74 = ((AssignmentStatement)v71).getE();
 
             checkBinary(v74,Kind.DIV);
@@ -2222,7 +2222,7 @@ void f() {
             Ident v79 = v78.getIdent();
             checkIdent(v79,"aa");
             assertNull(v78.getPixelSelector());
-            assertNull(((LValue)v78).getColor());
+            assertNull(((LValue)v78).getChannelSelector());
             Expr v80 = ((AssignmentStatement)v77).getE();
 
             checkBinary(v80,Kind.MOD);
@@ -2247,7 +2247,7 @@ void f() {
             Expr v88 = ((PixelSelector)v86).getY();
             checkNumLit(v88,1);
             assertEquals(Type.INT, v88.getType());
-            assertNull(((LValue)v84).getColor());
+            assertNull(((LValue)v84).getChannelSelector());
             Expr v89 = ((AssignmentStatement)v83).getE();
 
             checkBinary(v89,Kind.TIMES);
@@ -2284,7 +2284,7 @@ void f() {
             Expr v101 = ((PixelSelector)v99).getY();
             checkNumLit(v101,1);
             assertEquals(Type.INT, v101.getType());
-            assertNull(((LValue)v97).getColor());
+            assertNull(((LValue)v97).getChannelSelector());
             Expr v102 = ((AssignmentStatement)v96).getE();
 
             checkBinary(v102,Kind.DIV);
@@ -2321,7 +2321,7 @@ void f() {
             Expr v114 = ((PixelSelector)v112).getY();
             checkNumLit(v114,1);
             assertEquals(Type.INT, v114.getType());
-            assertNull(((LValue)v110).getColor());
+            assertNull(((LValue)v110).getChannelSelector());
             Expr v115 = ((AssignmentStatement)v109).getE();
 
             checkBinary(v115,Kind.MOD);
@@ -2351,7 +2351,7 @@ void f() {
             Ident v124 = v123.getIdent();
             checkIdent(v124,"aa");
             assertNull(v123.getPixelSelector());
-            assertNull(((LValue)v123).getColor());
+            assertNull(((LValue)v123).getChannelSelector());
             Expr v125 = ((AssignmentStatement)v122).getE();
 
             checkBinary(v125,Kind.TIMES);
@@ -2369,7 +2369,7 @@ void f() {
             Ident v130 = v129.getIdent();
             checkIdent(v130,"aa");
             assertNull(v129.getPixelSelector());
-            assertNull(((LValue)v129).getColor());
+            assertNull(((LValue)v129).getChannelSelector());
             Expr v131 = ((AssignmentStatement)v128).getE();
 
             checkBinary(v131,Kind.DIV);
@@ -2387,7 +2387,7 @@ void f() {
             Ident v136 = v135.getIdent();
             checkIdent(v136,"aa");
             assertNull(v135.getPixelSelector());
-            assertNull(((LValue)v135).getColor());
+            assertNull(((LValue)v135).getChannelSelector());
             Expr v137 = ((AssignmentStatement)v134).getE();
 
             checkBinary(v137,Kind.MOD);
@@ -2479,7 +2479,7 @@ void f() {
             Ident v25 = v24.getIdent();
             checkIdent(v25,"aa");
             assertNull(v24.getPixelSelector());
-            assertEquals( ColorChannel.red,v24.getColor());
+            assertEquals( ColorChannel.red,v24.getChannelSelector());
             Expr v26 = ((AssignmentStatement)v23).getE();
             checkIdentExpr(v26,"aa");
             assertEquals(Type.IMAGE, v26.getType());
@@ -2490,7 +2490,7 @@ void f() {
             Ident v29 = v28.getIdent();
             checkIdent(v29,"bb");
             assertNull(v28.getPixelSelector());
-            assertEquals( ColorChannel.grn,v28.getColor());
+            assertEquals( ColorChannel.grn,v28.getChannelSelector());
             Expr v30 = ((AssignmentStatement)v27).getE();
             checkIdentExpr(v30,"cc");
             assertEquals(Type.INT, v30.getType());
@@ -2508,7 +2508,7 @@ void f() {
             Expr v36 = ((PixelSelector)v34).getY();
             checkNumLit(v36,1);
             assertEquals(Type.INT, v36.getType());
-            assertEquals( ColorChannel.grn,v32.getColor());
+            assertEquals( ColorChannel.grn,v32.getChannelSelector());
             Expr v37 = ((AssignmentStatement)v31).getE();
             checkIdentExpr(v37,"cc");
             assertEquals(Type.INT, v37.getType());
@@ -2592,7 +2592,7 @@ void f() {
             Ident v26 = v25.getIdent();
             checkIdent(v26,"i");
             assertNull(v25.getPixelSelector());
-            assertNull(((LValue)v25).getColor());
+            assertNull(((LValue)v25).getChannelSelector());
             Expr v27 = ((AssignmentStatement)v24).getE();
             checkNumLit(v27,4);
             assertEquals(Type.INT, v27.getType());
@@ -2632,7 +2632,7 @@ void f() {
             Ident v42 = v41.getIdent();
             checkIdent(v42,"i");
             assertNull(v41.getPixelSelector());
-            assertNull(((LValue)v41).getColor());
+            assertNull(((LValue)v41).getChannelSelector());
             Expr v43 = ((AssignmentStatement)v40).getE();
             checkNumLit(v43,7);
             assertEquals(Type.INT, v43.getType());

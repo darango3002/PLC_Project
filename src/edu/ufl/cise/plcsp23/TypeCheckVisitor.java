@@ -396,23 +396,23 @@ public class TypeCheckVisitor implements ASTVisitor {
             lValue.getPixelSelector().visit(this, arg);
 
         if (identType == Type.IMAGE) {
-            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.IMAGE;
-            else if(lValue.getPixelSelector() != null && lValue.getColor() == null) returnType = Type.PIXEL;
-            else if(lValue.getPixelSelector() == null && lValue.getColor() != null) returnType = Type.IMAGE;
-            else if(lValue.getPixelSelector() != null && lValue.getColor() != null) returnType = Type.INT;
+            if(lValue.getPixelSelector() == null && lValue.getChannelSelector() == null) returnType = Type.IMAGE;
+            else if(lValue.getPixelSelector() != null && lValue.getChannelSelector() == null) returnType = Type.PIXEL;
+            else if(lValue.getPixelSelector() == null && lValue.getChannelSelector() != null) returnType = Type.IMAGE;
+            else if(lValue.getPixelSelector() != null && lValue.getChannelSelector() != null) returnType = Type.INT;
             else check(false, lValue, "invalid combination of pixel and channel selector");
         }
         else if (identType == Type.PIXEL) {
-            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.PIXEL;
-            else if(lValue.getPixelSelector() == null && lValue.getColor() != null) returnType = Type.INT;
+            if(lValue.getPixelSelector() == null && lValue.getChannelSelector() == null) returnType = Type.PIXEL;
+            else if(lValue.getPixelSelector() == null && lValue.getChannelSelector() != null) returnType = Type.INT;
             else check(false, lValue, "invalid combination of pixel and channel selector");
         }
         else if (identType == Type.STRING) {
-            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.STRING;
+            if(lValue.getPixelSelector() == null && lValue.getChannelSelector() == null) returnType = Type.STRING;
             else check(false, lValue, "invalid combination of pixel and channel selector");
         }
         else if (identType == Type.INT) {
-            if(lValue.getPixelSelector() == null && lValue.getColor() == null) returnType = Type.INT;
+            if(lValue.getPixelSelector() == null && lValue.getChannelSelector() == null) returnType = Type.INT;
             else check(false, lValue, "invalid combination of pixel and channel selector");
         }
 

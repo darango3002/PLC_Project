@@ -39,7 +39,7 @@ public class LValue extends AST {
 		return pixelSelector;
 	}
 
-	public ColorChannel getColor() {
+	public ColorChannel getChannelSelector() {
 		return color;
 	}
 

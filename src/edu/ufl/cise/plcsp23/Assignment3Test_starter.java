@@ -547,7 +547,7 @@ class Assignment3Test_starter {
 		Expr v26 = ((PixelSelector) v24).getY();
 		assertThat("", v26, instanceOf(PredeclaredVarExpr.class));
 		assertEquals(RES_y, ((PredeclaredVarExpr) v26).getKind());
-		assertNull(((LValue) v22).getColor());
+		assertNull(((LValue) v22).getChannelSelector());
 		Expr v27 = ((AssignmentStatement) v21).getE();
 		assertThat("", v27, instanceOf(UnaryExprPostfix.class));
 		Expr v28 = ((UnaryExprPostfix) v27).getPrimary();
@@ -575,7 +575,7 @@ class Assignment3Test_starter {
 		Expr v37 = ((PixelSelector) v35).getY();
 		assertThat("", v37, instanceOf(PredeclaredVarExpr.class));
 		assertEquals(RES_r, ((PredeclaredVarExpr) v37).getKind());
-		assertNull(((LValue) v33).getColor());
+		assertNull(((LValue) v33).getChannelSelector());
 		Expr v38 = ((AssignmentStatement) v32).getE();
 		assertThat("", v38, instanceOf(UnaryExprPostfix.class));
 		Expr v39 = ((UnaryExprPostfix) v38).getPrimary();
@@ -788,7 +788,7 @@ class Assignment3Test_starter {
 		Expr v16 = ((PixelSelector) v14).getY();
 		assertThat("", v16, instanceOf(PredeclaredVarExpr.class));
 		assertEquals(RES_y, ((PredeclaredVarExpr) v16).getKind());
-		assertNull(((LValue) v12).getColor());
+		assertNull(((LValue) v12).getChannelSelector());
 		Expr v17 = ((AssignmentStatement) v11).getE();
 		assertThat("", v17, instanceOf(UnaryExprPostfix.class));
 		Expr v18 = ((UnaryExprPostfix) v17).getPrimary();
@@ -832,7 +832,7 @@ class Assignment3Test_starter {
 		Expr v33 = ((PixelSelector) v31).getY();
 		assertThat("", v33, instanceOf(PredeclaredVarExpr.class));
 		assertEquals(RES_r, ((PredeclaredVarExpr) v33).getKind());
-		assertNull(((LValue) v29).getColor());
+		assertNull(((LValue) v29).getChannelSelector());
 		Expr v34 = ((AssignmentStatement) v28).getE();
 		assertThat("", v34, instanceOf(UnaryExprPostfix.class));
 		Expr v35 = ((UnaryExprPostfix) v34).getPrimary();
