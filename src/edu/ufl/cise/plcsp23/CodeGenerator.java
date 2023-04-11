@@ -5,6 +5,7 @@ import edu.ufl.cise.plcsp23.IToken.Kind;
 
 import java.util.List;
 import java.lang.Math.*;
+import java.util.Objects;
 
 public class CodeGenerator implements ASTVisitor {
 
@@ -16,7 +17,7 @@ public class CodeGenerator implements ASTVisitor {
         sb = new StringBuilder();
     }
 
-    public String getJavaType(Type type) throws PLCException{
+    protected String getJavaType(Type type) throws PLCException{
         if (type == Type.INT) {
             return "int";
         }
@@ -30,7 +31,7 @@ public class CodeGenerator implements ASTVisitor {
             throw new PLCException("unimplemented type to java type");
     }
 
-    public String getJavaOp(Kind kind) throws PLCException{
+    protected String getJavaOp(Kind kind) throws PLCException{
         String op = switch (kind) {
             case PLUS -> "+";
             case MINUS -> "-";
@@ -54,6 +55,14 @@ public class CodeGenerator implements ASTVisitor {
         return op;
     }
 
+    protected boolean isKind(Kind opKind, Kind... kinds) {
+        for (Kind k : kinds) {
+            if (k == opKind)
+                return true;
+        }
+        return false;
+    }
+
     public void generateApplyMethod(Program program, Object arg) throws PLCException {
         String javaProgramType = getJavaType(program.getType());
         List<NameDef> paramList = program.getParamList();
@@ -65,7 +74,10 @@ public class CodeGenerator implements ASTVisitor {
             param.visit(this, arg);
             sb.append(", ");
         }
-        sb.setLength(sb.length() - 2); // removes unwanted ', ' from parameter list
+
+        if (paramList.size() > 0)
+            sb.setLength(sb.length() - 2); // removes unwanted ', ' from parameter list
+
         sb.append(") {\n");
         block.visit(this, arg);
         sb.append("}\n");
@@ -151,15 +163,42 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws PLCException {
-        sb.append("(");
         Expr expr0 = binaryExpr.getLeft();
         Expr expr1 = binaryExpr.getRight();
+        Kind opKind = binaryExpr.getOp();
         String javaOp = getJavaOp(binaryExpr.getOp());
 
-        expr0.visit(this, arg);
-        sb.append(javaOp);
-        expr1.visit(this,arg);
-        sb.append(")");
+        sb.append("(");
+
+        if (isKind(opKind, Kind.OR, Kind.AND)) { // is a boolean expr
+            expr0.visit(this, arg);
+            sb.append(" != 0 ");
+            sb.append(javaOp).append(" ");
+            expr1.visit(this, arg);
+            sb.append(" != 0) ? 1 : 0");
+        }
+        else if (isKind(opKind, Kind.LT, Kind.GT, Kind.LE, Kind.GE, Kind.EQ)) {
+            expr0.visit(this, arg);
+            sb.append(javaOp);
+            expr1.visit(this, arg);
+            sb.append(") ? 1 : 0");
+        }
+        else if (isKind(opKind, Kind.EXP)) { // is an exponent
+            // maybe needs import?
+            sb.append("(int)Math.pow(");
+            expr0.visit(this, arg);
+            sb.append(", ");
+            expr1.visit(this, arg);
+            sb.append("))");
+        }
+        else {
+            expr0.visit(this, arg);
+            sb.append(javaOp);
+            expr1.visit(this, arg);
+            sb.append(")");
+        }
+
+
         return null;
     }
 
