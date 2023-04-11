@@ -47,6 +47,7 @@ public class CodeGenerator implements ASTVisitor {
             case AND -> "&&";
             case BITAND -> "&";
             case EXP -> "**";
+            //TODO: implement how each operator functions according to assignment PDF
             default -> throw new PLCException("unimplemented java op");
         };
 
