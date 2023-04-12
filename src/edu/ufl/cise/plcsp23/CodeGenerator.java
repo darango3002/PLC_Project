@@ -329,8 +329,16 @@ public class CodeGenerator implements ASTVisitor {
         return null;
     }
 
-    @Override
     public Object visitWhileStatement(WhileStatement whileStatement, Object arg) throws PLCException {
+        Expr guard = whileStatement.getGuard();
+        Block block = whileStatement.getBlock();
+
+        sb.append("while (");
+        guard.visit(this, arg);
+        sb.append(" != 0) {\n");
+        block.visit(this, arg);
+        sb.append("}");
+
         return null;
     }
 
