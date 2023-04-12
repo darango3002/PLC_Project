@@ -30,17 +30,9 @@ public class Ident extends AST {
 		return firstToken.getTokenString();
 	}
 
-	public NameDef getDef() {
-		return def;
-	}
-
-	public void setDef(NameDef def) {
-		this.def = def;
-	}
-
 	@Override
 	public String toString() {
-		return "Ident [getName()=" + getName() + ", getDef()=" + getDef() + "]";
+		return "Ident [getName()=" + getName();
 	}
 
 }
