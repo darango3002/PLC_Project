@@ -81,6 +81,10 @@ public class CodeGenerator implements ASTVisitor {
         sb.append(") {\n");
         block.visit(this, arg);
         sb.append("}\n");
+
+        // Add imports
+        sb.insert(0, imports);
+        System.out.println("ADDED IMPORTS");
     }
 
     @Override
@@ -300,6 +304,16 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitWriteStatement(WriteStatement statementWrite, Object arg) throws PLCException {
+        Expr expr = statementWrite.getE();
+
+        sb.append("ConsoleIO.write(");
+        expr.visit(this, arg);
+        sb.append(")");
+        System.out.println("WRITESTATEMENT");
+
+        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ConsoleIO") == -1) {
+            imports += "import edu.ufl.cise.plcsp23.runtime.ConsoleIO;\n";
+        }
         return null;
     }
 
