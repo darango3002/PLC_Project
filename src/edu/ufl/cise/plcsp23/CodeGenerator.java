@@ -10,6 +10,7 @@ import java.util.Objects;
 public class CodeGenerator implements ASTVisitor {
 
     String imports;
+    Type returnType;
     StringBuilder sb;
 
     public CodeGenerator() {
@@ -65,6 +66,7 @@ public class CodeGenerator implements ASTVisitor {
 
     public void generateApplyMethod(Program program, Object arg) throws PLCException {
         String javaProgramType = getJavaType(program.getType());
+        returnType = program.getType();
         List<NameDef> paramList = program.getParamList();
         Block block = program.getBlock();
 
@@ -84,7 +86,6 @@ public class CodeGenerator implements ASTVisitor {
 
         // Add imports
         sb.insert(0, imports);
-        System.out.println("ADDED IMPORTS");
     }
 
     @Override
@@ -121,10 +122,20 @@ public class CodeGenerator implements ASTVisitor {
         NameDef nameDef = declaration.getNameDef();
         Expr expr = declaration.getInitializer();
 
+//        System.out.println(nameDef.getType());
+//        System.out.println(expr.getType());
+
         nameDef.visit(this, arg);
         if (expr != null) {
             sb.append(" = ");
-            expr.visit(this, arg);
+            if (nameDef.getType() == Type.STRING && expr.getType() == Type.INT) {
+                sb.append("Integer.toString(");
+                expr.visit(this, arg);
+                sb.append(")");
+            }
+            else {
+                expr.visit(this, arg);
+            }
         }
 
         return null;
@@ -256,6 +267,7 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitRandomExpr(RandomExpr randomExpr, Object arg) throws PLCException {
+        System.out.println("RAND");
         return null;
     }
 
@@ -309,7 +321,7 @@ public class CodeGenerator implements ASTVisitor {
         sb.append("ConsoleIO.write(");
         expr.visit(this, arg);
         sb.append(")");
-        System.out.println("WRITESTATEMENT");
+//        System.out.println("WRITESTATEMENT");
 
         if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ConsoleIO") == -1) {
             imports += "import edu.ufl.cise.plcsp23.runtime.ConsoleIO;\n";
@@ -327,7 +339,14 @@ public class CodeGenerator implements ASTVisitor {
         Expr expr = returnStatement.getE();
 
         sb.append("return ");
-        expr.visit(this, arg);
+        if (returnType == Type.STRING && expr.getType() == Type.INT) {
+            sb.append("Integer.toString(");
+            expr.visit(this, arg);
+            sb.append(")");
+        }
+        else {
+            expr.visit(this, arg);
+        }
         return null;
     }
 
