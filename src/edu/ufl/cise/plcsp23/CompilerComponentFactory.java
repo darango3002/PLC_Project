@@ -33,6 +33,6 @@ public class CompilerComponentFactory {
 	}
 
 	public static ASTVisitor makeCodeGenerator(String packageName) {
-		return new CodeGenerator();
+		return new CodeGenerator(packageName);
 	}
 }

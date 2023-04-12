@@ -16,18 +16,24 @@ import edu.ufl.cise.plcsp23.PLCException;
 public class Ident extends AST {
 
 	NameDef def = null;
+	String name;
 
 	public Ident(IToken firstToken) {
 		super(firstToken);
+		name = firstToken.getTokenString();
 	}
 
 	@Override
 	public Object visit(ASTVisitor v, Object arg) throws PLCException {
-		return v.visitIdent(this, arg);
+			return v.visitIdent(this, arg);
 	}
 
 	public String getName() {
-		return firstToken.getTokenString();
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

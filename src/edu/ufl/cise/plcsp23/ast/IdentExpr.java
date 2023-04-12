@@ -14,9 +14,12 @@ import edu.ufl.cise.plcsp23.IToken;
 import edu.ufl.cise.plcsp23.PLCException;
 
 public class IdentExpr extends Expr {
+
+	String name;
 		
 	public IdentExpr(IToken firstToken) {
 		super(firstToken);
+		name = firstToken.getTokenString();
 	}
 
 	@Override
@@ -25,7 +28,11 @@ public class IdentExpr extends Expr {
 	}
 	
 	public String getName() {
-		return firstToken.getTokenString();
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

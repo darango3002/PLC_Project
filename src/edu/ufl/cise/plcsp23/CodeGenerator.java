@@ -12,10 +12,13 @@ public class CodeGenerator implements ASTVisitor {
     String imports;
     Type returnType;
     StringBuilder sb;
+    String packageName = "";
 
-    public CodeGenerator() {
+    public CodeGenerator(String packageName) {
         imports = "";
         sb = new StringBuilder();
+        this.packageName = packageName;
+
     }
 
     protected String getJavaType(Type type) throws PLCException{
@@ -65,6 +68,8 @@ public class CodeGenerator implements ASTVisitor {
     }
 
     public void generateApplyMethod(Program program, Object arg) throws PLCException {
+
+
         String javaProgramType = getJavaType(program.getType());
         returnType = program.getType();
         List<NameDef> paramList = program.getParamList();
@@ -90,6 +95,10 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitProgram(Program program, Object arg) throws PLCException {
+        if (packageName != "" || packageName != null) {
+            sb.append(packageName);
+        }
+
         String name = program.getIdent().getName();
 
         sb.append("public class ");
@@ -121,9 +130,6 @@ public class CodeGenerator implements ASTVisitor {
     public Object visitDeclaration(Declaration declaration, Object arg) throws PLCException {
         NameDef nameDef = declaration.getNameDef();
         Expr expr = declaration.getInitializer();
-
-//        System.out.println(nameDef.getType());
-//        System.out.println(expr.getType());
 
         nameDef.visit(this, arg);
         if (expr != null) {
@@ -267,7 +273,6 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitRandomExpr(RandomExpr randomExpr, Object arg) throws PLCException {
-        System.out.println("RAND");
         return null;
     }
 
@@ -308,12 +313,9 @@ public class CodeGenerator implements ASTVisitor {
         LValue lvalue = statementAssign.getLv();
         Expr expr = statementAssign.getE();
 
-        System.out.println("ASSIGNMENT");
-        System.out.println(lvalue);
-        System.out.println(expr);
+
 
         Type type = lvalue.getlValueType();
-        System.out.println(type);
 
         lvalue.visit(this, arg);
         sb.append(" = ");
@@ -335,7 +337,6 @@ public class CodeGenerator implements ASTVisitor {
         sb.append("ConsoleIO.write(");
         expr.visit(this, arg);
         sb.append(")");
-//        System.out.println("WRITESTATEMENT");
 
         if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ConsoleIO") == -1) {
             imports += "import edu.ufl.cise.plcsp23.runtime.ConsoleIO;\n";

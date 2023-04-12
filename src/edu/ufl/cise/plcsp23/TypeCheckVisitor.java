@@ -28,10 +28,12 @@ public class TypeCheckVisitor implements ASTVisitor {
             }
         }
         int currentNum;
+        int nextStack;
         Stack<Integer> scopeStack = new Stack<Integer>();
 
         void enterScope() {
-            currentNum++;
+            nextStack++;
+            currentNum = nextStack;
             scopeStack.push(currentNum);
         }
         void closeScope() {
@@ -63,8 +65,7 @@ public class TypeCheckVisitor implements ASTVisitor {
         //returns NameDef if present, or null if name not declared.
         //closest NameDef to scopeNum
         public NameDef lookup(String name) {
-            if (entries.get(name) == null) return null;
-            else {
+            if (entries.get(name) != null) {
                 ArrayList<Pair<NameDef, Integer>> temp = entries.get(name);
                 Pair<NameDef, Integer> current = null;
                 int highScope = 0;
@@ -83,7 +84,10 @@ public class TypeCheckVisitor implements ASTVisitor {
                 else
                     return null;
             }
+            return null;
         }
+
+
     }
     SymbolTable symbolTable = new SymbolTable();
     private void check(boolean condition, AST node, String message)
@@ -141,6 +145,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 
     @Override
     public Object visitDeclaration(Declaration declaration, Object arg) throws PLCException {
+        String decName = declaration.getNameDef().getIdent().getName();
+        if (symbolTable.lookup(decName) != null && symbolTable.currentNum != 1) {
+            declaration.getNameDef().getIdent().setName(decName + "_" + symbolTable.currentNum);
+        }
+
         Expr initializer = declaration.getInitializer();
         if (initializer != null) {
             //infer type of initializer
@@ -162,6 +171,9 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitNameDef(NameDef nameDef, Object arg) throws PLCException {
         String name = nameDef.getIdent().getName();
+        if (symbolTable.currentNum != 1) {
+            name = name.substring(0, name.length() - 2);
+        }
         boolean inserted = symbolTable.insert(name, nameDef);
         check(inserted, nameDef, "variable " + name + " already declared");
 
@@ -323,8 +335,10 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitIdentExpr(IdentExpr identExpr, Object arg) throws PLCException {
         String name = identExpr.getName();
-        NameDef nameDef = symbolTable.lookup(name);
-        check(nameDef != null, identExpr, "undefined identifier " + name);
+        identExpr.setName(name);
+        String scopeName = identExpr.getName();
+        NameDef nameDef = symbolTable.lookup(scopeName);
+        check(nameDef != null, identExpr, "undefined identifier " + scopeName);
         Type type = nameDef.getType();
         identExpr.setType(type);
         return type;
