@@ -19,6 +19,8 @@ public class LValue extends AST {
 	final PixelSelector pixelSelector;
 	final ColorChannel color;
 
+	Type lValueType;
+
 	public LValue(IToken firstToken, Ident ident, PixelSelector pixelSelector, ColorChannel color) {
 		super(firstToken);
 		this.ident = ident;
@@ -29,6 +31,14 @@ public class LValue extends AST {
 	@Override
 	public Object visit(ASTVisitor v, Object arg) throws PLCException {
 		return v.visitLValue(this, arg);
+	}
+
+	public void setlValueType(Type type) {
+		lValueType = type;
+	}
+
+	public Type getlValueType() {
+		return lValueType;
 	}
 
 	public Ident getIdent() {

@@ -308,9 +308,23 @@ public class CodeGenerator implements ASTVisitor {
         LValue lvalue = statementAssign.getLv();
         Expr expr = statementAssign.getE();
 
+        System.out.println("ASSIGNMENT");
+        System.out.println(lvalue);
+        System.out.println(expr);
+
+        Type type = lvalue.getlValueType();
+        System.out.println(type);
+
         lvalue.visit(this, arg);
         sb.append(" = ");
-        expr.visit(this, arg);
+        if (lvalue.getlValueType() == Type.STRING && expr.getType() == Type.INT) {
+            sb.append("Integer.toString(");
+            expr.visit(this, arg);
+            sb.append(")");
+        }
+        else {
+            expr.visit(this, arg);
+        }
         return null;
     }
 

@@ -426,6 +426,8 @@ public class TypeCheckVisitor implements ASTVisitor {
         Type exprType = (Type) statementAssign.getE().visit(this, arg);
         statementAssign.getE().setType(exprType);
         Type lvalueType = (Type) statementAssign.getLv().visit(this, arg);
+//        System.out.println(lvalueType);
+        statementAssign.getLv().setlValueType(lvalueType);
 
         check(assignmentCompatible(lvalueType, statementAssign.getE().getType()), statementAssign, "left and right values do not match (L) " + nameDef.getType()+ " (R) " + statementAssign.getE().getType());
         return null;
