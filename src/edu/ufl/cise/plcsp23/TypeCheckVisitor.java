@@ -338,11 +338,13 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitIdentExpr(IdentExpr identExpr, Object arg) throws PLCException {
         String name = identExpr.getName();
-        identExpr.setName(name);
-        //TODO: figure out a way for scoped variables to be found by JVM, rn they cannot when they are returned
-        String scopeName = identExpr.getName();
-        NameDef nameDef = symbolTable.lookup(scopeName);
-        check(nameDef != null, identExpr, "undefined identifier " + scopeName);
+
+//        if (symbolTable.currentNum != 1) {
+//            identExpr.setName(name + "_" + symbolTable.currentNum);
+//        }
+        NameDef nameDef = symbolTable.lookup(name);
+        identExpr.setName(nameDef.getIdent().getName());
+        check(nameDef != null, identExpr, "undefined identifier " + name);
         Type type = nameDef.getType();
         identExpr.setType(type);
         return type;
