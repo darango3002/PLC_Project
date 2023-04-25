@@ -800,7 +800,7 @@ class Assignment5Test_grading {
                     		int i1 = 0.
                     		i0 = i0/2.
                     	}.
-                    	while (i0 > 0|| 3 > 0){
+                    	while (i0 > 0 || 3 > 0){
                     		:i1.
                     	}.
                     	:5.

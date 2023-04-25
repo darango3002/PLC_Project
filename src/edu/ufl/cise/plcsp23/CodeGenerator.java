@@ -338,9 +338,9 @@ public class CodeGenerator implements ASTVisitor {
         Expr trueCase = conditionalExpr.getTrueCase();
         Expr falseCase = conditionalExpr.getFalseCase();
 
-        sb.append("(");
+        sb.append("((");
         guard.visit(this,arg);
-        sb.append(" != 0 ? ");
+        sb.append(") != 0 ? ");
         trueCase.visit(this, arg);
         sb.append(" : ");
         falseCase.visit(this, arg);
@@ -523,9 +523,9 @@ public class CodeGenerator implements ASTVisitor {
         Expr guard = whileStatement.getGuard();
         Block block = whileStatement.getBlock();
 
-        sb.append("while (");
+        sb.append("while ((");
         guard.visit(this, arg);
-        sb.append(" != 0) {\n");
+        sb.append(") != 0) {\n");
         block.visit(this, arg);
         sb.append("}");
 
