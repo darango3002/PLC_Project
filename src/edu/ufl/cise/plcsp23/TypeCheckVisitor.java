@@ -146,7 +146,10 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitDeclaration(Declaration declaration, Object arg) throws PLCException {
         String decName = declaration.getNameDef().getIdent().getName();
-        if (symbolTable.lookup(decName) != null && symbolTable.currentNum != 1) {
+//        if (symbolTable.lookup(decName) != null && symbolTable.currentNum != 1) {
+//            declaration.getNameDef().getIdent().setName(decName + "_" + symbolTable.currentNum);
+//        }
+        if (symbolTable.currentNum != 1) {
             declaration.getNameDef().getIdent().setName(decName + "_" + symbolTable.currentNum);
         }
 
@@ -336,6 +339,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     public Object visitIdentExpr(IdentExpr identExpr, Object arg) throws PLCException {
         String name = identExpr.getName();
         identExpr.setName(name);
+        //TODO: figure out a way for scoped variables to be found by JVM, rn they cannot when they are returned
         String scopeName = identExpr.getName();
         NameDef nameDef = symbolTable.lookup(scopeName);
         check(nameDef != null, identExpr, "undefined identifier " + scopeName);
@@ -470,6 +474,9 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr returnExpr = returnStatement.getE();
+        if (symbolTable.currentNum != 1) {
+            //TODO: make sure name matches
+        }
         returnStatement.getE().setType((Type) returnExpr.visit(this, arg));
         boolean t = assignmentCompatible(programType,returnStatement.getE().getType());
         check(t, returnStatement, "program type (" + programType.name() + ") is not compatible w/ expr type (" + returnExpr.getType().name() + ")");

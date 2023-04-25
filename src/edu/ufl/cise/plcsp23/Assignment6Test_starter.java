@@ -147,7 +147,7 @@ class Assignment6Test_starter {
 		String s = owl;
 		Object[] params = { s };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		BufferedImage sourceImage = FileURLIO.readImage(s);
 		BufferedImage expected = ImageOps.extractRed(sourceImage);
 		imageEquals(expected, result);
@@ -165,7 +165,7 @@ class Assignment6Test_starter {
 		String s = owl;
 		Object[] params = { s };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		BufferedImage sourceImage = FileURLIO.readImage(s);
 		BufferedImage imr = ImageOps.extractRed(sourceImage);
 		BufferedImage expected = ImageOps.extractBlu(imr);
@@ -182,7 +182,7 @@ class Assignment6Test_starter {
 				""";
 		Object[] params = {};
 		int result = (int) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		int p = PixelOps.pack(4, 5, 6);
 		int expected = PixelOps.grn(p);
 		assertEquals(expected, result);
@@ -211,7 +211,7 @@ class Assignment6Test_starter {
 		bluImage = ImageOps.setAllPixels(bluImage, PixelOps.pack(0, 0, 255));
 		BufferedImage expected = ImageOps.makeImage(w, h);
 		ImageOps.copyInto((ImageOps.binaryImageImageOp(ImageOps.OP.PLUS, grnImage, bluImage)), expected);
-		show(result);
+//		show(result);
 		imageEquals(expected, result);
 	}
 
@@ -225,7 +225,7 @@ class Assignment6Test_starter {
 				""";
 		Object[] params = { owl };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		BufferedImage sourceImage = FileURLIO.readImage(owl);
 		BufferedImage expected = ImageOps.binaryImageScalarOp(ImageOps.OP.DIV, sourceImage, 3);
 		imageEquals(expected, result);
@@ -282,7 +282,7 @@ class Assignment6Test_starter {
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
 		BufferedImage expected = FileURLIO.readImage(s);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -298,7 +298,7 @@ class Assignment6Test_starter {
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
 		BufferedImage expected = FileURLIO.readImage(s, 100, 200);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -330,7 +330,7 @@ class Assignment6Test_starter {
 		BufferedImage k = FileURLIO.readImage(s);
 		BufferedImage kk = ImageOps.cloneImage(k);
 		imageEquals(kk, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -348,7 +348,7 @@ class Assignment6Test_starter {
 		BufferedImage k = FileURLIO.readImage(s);
 		BufferedImage kk = ImageOps.copyAndResize(k, 100, 200);
 		imageEquals(result, kk);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -364,7 +364,7 @@ class Assignment6Test_starter {
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
 		BufferedImage k = FileURLIO.readImage(s, 200, 50);
 		imageEquals(result, k);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -399,7 +399,7 @@ class Assignment6Test_starter {
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
 		BufferedImage expected = FileURLIO.readImage(s, 100, 200);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -418,7 +418,7 @@ class Assignment6Test_starter {
 		int color = 0xFF0000; // red
 		ImageOps.setAllPixels(expected, color);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -437,7 +437,7 @@ class Assignment6Test_starter {
 		int color = 0x00FF00; // green
 		ImageOps.setAllPixels(expected, color);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -456,7 +456,7 @@ class Assignment6Test_starter {
 		int color = 0x0000FF; // blue
 		ImageOps.setAllPixels(expected, color);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -476,7 +476,7 @@ class Assignment6Test_starter {
 		int color = 0x0000FF; // blue
 		ImageOps.setAllPixels(expected, color);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -497,7 +497,7 @@ class Assignment6Test_starter {
 		int color = PixelOps.pack(val, val, val);
 		ImageOps.setAllPixels(expected, color);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -520,7 +520,7 @@ class Assignment6Test_starter {
 		int color = PixelOps.pack(0, 0, val);
 		ImageOps.setAllPixels(expected, color);
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	/*
@@ -547,7 +547,7 @@ class Assignment6Test_starter {
 				""";
 		Object[] params = {};
 		genCodeAndRun(input, "", params);
-		wait_for_input();
+		//wait_for_input();
 	}
 
 	@Test
@@ -563,15 +563,15 @@ class Assignment6Test_starter {
 				}
 				""";
 		String s = owl;
-		BufferedImage sourceImage = FileURLIO.readImage(s);
+		BufferedImage sourceImage = FileURLIO.readImage(s); // k init
 		int wSource = sourceImage.getWidth();
 		int hSource = sourceImage.getHeight();
 		int wDest = wSource / 4;
 		int hDest = hSource / 4;
 		Object[] params = { s, wDest, hDest };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		BufferedImage expected = ImageOps.makeImage(wDest, hDest);
-		ImageOps.copyInto(sourceImage, expected);
+		BufferedImage expected = ImageOps.makeImage(wDest, hDest); // kk init
+		ImageOps.copyInto(sourceImage, expected); // kk = k
 		imageEquals(expected, result);
 	}
 
@@ -590,7 +590,7 @@ class Assignment6Test_starter {
 		BufferedImage kk = ImageOps.makeImage(400, 500);
 		ImageOps.setAllPixels(kk, PixelOps.pack(255, 0, 255));
 		imageEquals(kk, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -615,7 +615,7 @@ class Assignment6Test_starter {
 			}
 		}
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -643,8 +643,8 @@ class Assignment6Test_starter {
 		BufferedImage expected = ImageOps.binaryImageScalarOp(ImageOps.OP.DIV,
 				ImageOps.binaryImageImageOp(ImageOps.OP.PLUS, b, o), 2);
 		imageEquals(expected, result);
-		show(result);
-		show(expected);
+//		show(result);
+//		show(expected);
 
 	}
 
@@ -671,8 +671,8 @@ class Assignment6Test_starter {
 			}
 		}
 		imageEquals(expected, result);
-		show(result);
-		show(expected);
+//		show(result);
+//		show(expected);
 	}
 
 	@Test
@@ -702,7 +702,7 @@ class Assignment6Test_starter {
 			}
 		}
 		imageEquals(im, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -781,7 +781,7 @@ class Assignment6Test_starter {
 		int size = 400;
 		Object[] params = { size };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		BufferedImage expected = ImageOps.makeImage(size, size);
 		for (int x = 0; x != expected.getWidth(); x++) {
 			for (int y = 0; y != expected.getHeight(); y++) {
@@ -821,7 +821,7 @@ class Assignment6Test_starter {
 		}
 		;
 		imageEquals(expected, result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -836,7 +836,7 @@ class Assignment6Test_starter {
 		String s = owl;
 		Object[] params = { s };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		BufferedImage tallOwl = ImageOps.makeImage(100, 500);
 		ImageOps.copyInto(FileURLIO.readImage(s), tallOwl);
 		imageEquals(tallOwl, result);
@@ -855,7 +855,7 @@ class Assignment6Test_starter {
 		String s = owl;
 		Object[] params = { s };
 		BufferedImage result = (BufferedImage) genCodeAndRun(input, "", params);
-		show(result);
+//		show(result);
 		BufferedImage owlImage = FileURLIO.readImage(s);
 		BufferedImage expected = ImageOps.cloneImage(owlImage);
 		ImageOps.copyInto((ImageOps.binaryImageScalarOp(ImageOps.OP.DIV, owlImage, 3)), expected);
@@ -890,7 +890,7 @@ class Assignment6Test_starter {
 			}
 		}
 		imageEquals(newImage,result);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -920,7 +920,7 @@ class Assignment6Test_starter {
 			}
 		}
 		imageEquals(result, expected);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -952,7 +952,7 @@ class Assignment6Test_starter {
 
 		}
 		imageEquals(result, expected);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -983,7 +983,7 @@ class Assignment6Test_starter {
 			}
 		}
 		imageEquals(result, expected);
-		show(result);
+//		show(result);
 	}
 
 	@Test
@@ -1026,7 +1026,7 @@ class Assignment6Test_starter {
 
 		}
 		imageEquals(result, expected);
-		show(result);
+//		show(result);
 	}
 
 }

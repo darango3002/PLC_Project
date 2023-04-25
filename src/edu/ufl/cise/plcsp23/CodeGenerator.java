@@ -2,6 +2,8 @@ package edu.ufl.cise.plcsp23;
 
 import edu.ufl.cise.plcsp23.ast.*;
 import edu.ufl.cise.plcsp23.IToken.Kind;
+import edu.ufl.cise.plcsp23.runtime.ImageOps;
+import edu.ufl.cise.plcsp23.runtime.PLCRuntimeException;
 
 import java.util.List;
 import java.lang.Math.*;
@@ -30,6 +32,18 @@ public class CodeGenerator implements ASTVisitor {
         }
         else if (type == Type.VOID) {
             return "void";
+        }
+        else if (type == Type.IMAGE) {
+            if (imports.indexOf("import java.awt.image.BufferedImage;") == -1) {
+                imports += "import java.awt.image.BufferedImage;\n";
+            }
+            return "BufferedImage";
+        }
+        else if (type == Type.PIXEL) {
+//            if (imports.indexOf("import java.awt.image.BufferedImage;") == -1) {
+//                imports += "import java.awt.image.BufferedImage;\n";
+//            }
+            return "int";
         }
         else
             throw new PLCException("unimplemented type to java type");
@@ -90,7 +104,7 @@ public class CodeGenerator implements ASTVisitor {
         sb.append("}\n");
 
         // Add imports
-        sb.insert(0, imports);
+        sb.insert(0, imports + "\n");
     }
 
     @Override
@@ -130,17 +144,93 @@ public class CodeGenerator implements ASTVisitor {
     public Object visitDeclaration(Declaration declaration, Object arg) throws PLCException {
         NameDef nameDef = declaration.getNameDef();
         Expr expr = declaration.getInitializer();
+        Dimension dim = nameDef.getDimension();
 
         nameDef.visit(this, arg);
         if (expr != null) {
             sb.append(" = ");
-            if (nameDef.getType() == Type.STRING && expr.getType() == Type.INT) {
+            if (nameDef.getType() == Type.IMAGE) {
+                if (dim == null) {
+                    if (expr.getType() == Type.STRING) {
+                        sb.append("FileURLIO.readImage(");
+                        expr.visit(this, arg);
+                        sb.append(")");
+
+                        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.FileURLIO;") == -1) {
+                            imports += "import edu.ufl.cise.plcsp23.runtime.FileURLIO;\n";
+                        }
+                    }
+                    if (expr.getType() == Type.IMAGE) {
+                        sb.append("ImageOps.cloneImage(");
+                        expr.visit(this, arg);
+                        sb.append(")");
+
+                        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                            imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                        }
+                    }
+
+                }
+                else { // dimension != null
+                    if (expr.getType() == Type.STRING) {
+                        sb.append("FileURLIO.readImage(");
+                        expr.visit(this, arg);
+                        sb.append(", ");
+                        dim.visit(this,arg);
+                        sb.append(")");
+
+                        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.FileURLIO;") == -1) {
+                            imports += "import edu.ufl.cise.plcsp23.runtime.FileURLIO;\n";
+                        }
+                    }
+                    if (expr.getType() == Type.IMAGE) {
+                        sb.append("ImageOps.copyAndResize(");
+                        expr.visit(this, arg);
+                        sb.append(", ");
+                        dim.visit(this,arg);
+                        sb.append(")");
+
+                        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                            imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                        }
+                    }
+                    if (expr.getType() == Type.PIXEL) {
+                        sb.append("ImageOps.makeImage(");
+                        dim.visit(this, arg);
+                        sb.append(");\n");
+                        sb.append("ImageOps.setAllPixels(");
+                        sb.append(nameDef.getIdent().getName());
+                        sb.append(", ");
+                        expr.visit(this, arg);
+                        sb.append(")");
+
+                        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                            imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                        }
+                        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps;") == -1) {
+                            imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+                        }
+                    }
+
+                }
+            }
+            else if (nameDef.getType() == Type.STRING && expr.getType() == Type.INT) {
                 sb.append("Integer.toString(");
                 expr.visit(this, arg);
                 sb.append(")");
             }
             else {
                 expr.visit(this, arg);
+            }
+        }
+        else if (expr == null && nameDef.getType() == Type.IMAGE) { // no initializer expr but image type on LHS
+            sb.append(" = ");
+            sb.append("ImageOps.makeImage(");
+            dim.visit(this,arg);
+            sb.append(")");
+
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
             }
         }
 
@@ -164,12 +254,77 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitUnaryExprPostFix(UnaryExprPostfix unaryExprPostfix, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        Expr primaryExpr = unaryExprPostfix.getPrimary();
+        PixelSelector pixl = unaryExprPostfix.getPixel();
+        ColorChannel chnl = unaryExprPostfix.getColor();
+
+        if (primaryExpr.getType() == Type.IMAGE) {
+            if (pixl != null & chnl == null) {
+                sb.append("ImageOps.getRGB(");
+                primaryExpr.visit(this, arg);
+                sb.append(", ");
+                pixl.visit(this, arg);
+                sb.append(")");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                }
+            }
+            else if (pixl != null & chnl != null) {
+                sb.append("PixelOps.");
+                sb.append(chnl.name());
+                sb.append("(ImageOps.getRGB(");
+                primaryExpr.visit(this,arg);
+                sb.append(", ");
+                pixl.visit(this,arg);
+                sb.append("))");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                }
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps;") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+                }
+            }
+            else if (pixl == null & chnl != null) {
+                sb.append("ImageOps.extract");
+                sb.append(chnl.name().substring(0, 1).toUpperCase()); // capitalizes first char of color
+                sb.append(chnl.name().substring(1)); // rest of color
+                sb.append("(");
+                primaryExpr.visit(this, arg);
+                sb.append(")");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps;") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                }
+            }
+            else {
+                throw new PLCRuntimeException("unsupported combination of pixel and channel selector for IMAGE type");
+            }
+        }
+        else if (primaryExpr.getType() == Type.PIXEL) {
+            if (pixl == null & chnl != null) {
+                sb.append("PixelOps.");
+                sb.append(chnl.name());
+                sb.append("(");
+                primaryExpr.visit(this, arg);
+                sb.append(")");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps;") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+                }
+            }
+            else {
+                throw new PLCRuntimeException("unsupported combination of pixel and channel selector for PIXEL type");
+            }
+        }
+
+        return null;
     }
 
     @Override
     public Object visitPixelFuncExpr(PixelFuncExpr pixelFuncExpr, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        throw new PLCException("NOT GOING TO IMPLEMENT");
     }
 
     @Override
@@ -218,7 +373,6 @@ public class CodeGenerator implements ASTVisitor {
             sb.append(") ? 1 : 0)");
         }
         else if (isKind(opKind, Kind.EXP)) { // is an exponent
-            // maybe needs import?
             sb.append("(int)Math.pow(");
             expr0.visit(this, arg);
             sb.append(", ");
@@ -278,17 +432,38 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitPixelSelector(PixelSelector pixelSelector, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        Expr expr0 = pixelSelector.getX();
+        Expr expr1 = pixelSelector.getY();
+
+        expr0.visit(this, arg);
+        sb.append(", ");
+        expr1.visit(this, arg);
+
+        return null;
     }
 
     @Override
     public Object visitExpandedPixelExpr(ExpandedPixelExpr expandedPixelExpr, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        sb.append("PixelOps.pack(");
+        expandedPixelExpr.getRedExpr().visit(this, arg);
+        sb.append(", ");
+        expandedPixelExpr.getGrnExpr().visit(this, arg);
+        sb.append(", ");
+        expandedPixelExpr.getBluExpr().visit(this, arg);
+        sb.append(")");
+
+        if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
+            imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+        }
+        return null;
     }
 
     @Override
     public Object visitDimension(Dimension dimension, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        dimension.getWidth().visit(this, arg);
+        sb.append(", ");
+        dimension.getHeight().visit(this, arg);
+        return null;
     }
 
     // STATEMENTS //
