@@ -39,9 +39,6 @@ public class CodeGenerator implements ASTVisitor {
             return "BufferedImage";
         }
         else if (type == Type.PIXEL) {
-//            if (imports.indexOf("import java.awt.image.BufferedImage;") == -1) {
-//                imports += "import java.awt.image.BufferedImage;\n";
-//            }
             return "int";
         }
         else
@@ -629,8 +626,6 @@ public class CodeGenerator implements ASTVisitor {
         PixelSelector pixel = lvalue.getPixelSelector();
         ColorChannel channel = lvalue.getChannelSelector();
 
-
-
         if (lvalue.getlValueType() == Type.STRING && expr.getType() == Type.INT) {
             lvalue.visit(this, arg);
             sb.append(" = ");
@@ -638,15 +633,11 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
             sb.append(")");
         }
-//        else if (lvalue.getlValueType() == Type.IMAGE && expr.getType() == Type.PIXEL && channel != null) {
-//
-//        }
+
         else if (lvalue.getlValueType() == Type.PIXEL && pixel == null && channel == null) {
             lvalue.visit(this, arg);
             sb.append(" = ");
-            //sb.append("PixelOps.pack(");
             expr.visit(this, arg);
-           // sb.append(")");
 
             if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
                 imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
@@ -701,9 +692,11 @@ public class CodeGenerator implements ASTVisitor {
             lvalue.visit(this, arg);
             sb.append(", x, y, ");
             expr.visit(this, arg);
-//            sb.append(", ");
-//            expr.visit(this,arg);
             sb.append("); }\n}\n");
+
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+            }
 
         }
         else if (lvalue.getlValueType() == Type.INT && pixel != null && channel != null) {
@@ -728,6 +721,13 @@ public class CodeGenerator implements ASTVisitor {
             sb.append(", ");
             expr.visit(this, arg);
             sb.append(")); }\n}\n");
+
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+            }
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+            }
         }
         else if (lvalue.getlValueType() == Type.STRING && expr.getType() == Type.PIXEL) {
             lvalue.visit(this, arg);
@@ -735,6 +735,10 @@ public class CodeGenerator implements ASTVisitor {
             sb.append("PixelOps.packedToString(");
             expr.visit(this, arg);
             sb.append(")");
+
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+            }
         }
         else {
             lvalue.visit(this, arg);
