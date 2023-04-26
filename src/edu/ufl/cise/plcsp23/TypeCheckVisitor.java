@@ -476,9 +476,6 @@ public class TypeCheckVisitor implements ASTVisitor {
     @Override
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr returnExpr = returnStatement.getE();
-        if (symbolTable.currentNum != 1) {
-            //TODO: make sure name matches
-        }
         returnStatement.getE().setType((Type) returnExpr.visit(this, arg));
         boolean t = assignmentCompatible(programType,returnStatement.getE().getType());
         check(t, returnStatement, "program type (" + programType.name() + ") is not compatible w/ expr type (" + returnExpr.getType().name() + ")");

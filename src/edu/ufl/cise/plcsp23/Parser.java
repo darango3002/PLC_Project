@@ -362,7 +362,6 @@ public class Parser implements IParser{
             consume();
             e = new UnaryExpr(firstToken, op.getKind(), unary_expr());
         }
-        // TODO: IMPLEMENT UnaryExprPostfix
         else
             e = unary_expr_postfix();
 
@@ -426,7 +425,6 @@ public class Parser implements IParser{
             e = new PredeclaredVarExpr(firstToken);
             consume();
         }
-        // TODO: IMPLEMENT ExpandedPixel and PixelFunctionExpr within PrimaryExpr
         else if (isKind(Kind.LSQUARE)) {
             e = expanded_pixel();
         }

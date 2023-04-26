@@ -7,7 +7,6 @@ import edu.ufl.cise.plcsp23.runtime.PLCRuntimeException;
 
 import java.util.List;
 import java.lang.Math.*;
-import java.util.Objects;
 
 public class CodeGenerator implements ASTVisitor {
 
@@ -66,7 +65,6 @@ public class CodeGenerator implements ASTVisitor {
             case AND -> "&&";
             case BITAND -> "&";
             case EXP -> "**";
-            //TODO: implement how each operator functions according to assignment PDF
             default -> throw new PLCException("unimplemented java op");
         };
 
@@ -392,7 +390,24 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitUnaryExpr(UnaryExpr unaryExpr, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        Expr expr = unaryExpr.getE();
+        Kind op = unaryExpr.getOp();
+
+        if (expr.getType() == Type.INT) {
+            if (isKind(op, Kind.BANG)) {
+                sb.append("(");
+                expr.visit(this, arg);
+                sb.append(" == 0 ? 1 : 0)");
+            }
+            else if (isKind(op, Kind.MINUS)) {
+                sb.append("-");
+                expr.visit(this, arg);
+            }
+        }
+        else
+            throw new PLCRuntimeException("Unary expr is not of type: INT");
+
+        return null;
     }
 
     @Override
@@ -427,6 +442,12 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitRandomExpr(RandomExpr randomExpr, Object arg) throws PLCException {
+        int randInt = (int)(Math.floor(Math.random() * 256));
+        sb.append(randInt);
+
+        if(imports.indexOf("import java.lang.Math.*;") == -1) {
+            imports += "import java.lang.Math.*;\n";
+        }
         return null;
     }
 
@@ -469,16 +490,11 @@ public class CodeGenerator implements ASTVisitor {
     // STATEMENTS //
     @Override
     public Object visitLValue(LValue lValue, Object arg) throws PLCException {
-        PixelSelector pixel = lValue.getPixelSelector();
-        ColorChannel channel = lValue.getChannelSelector();
         String name = lValue.getIdent().getName();
 
         sb.append(name);
+
         // ONLY HANDLES CASE WHERE PIXEL AND CHANNEL ARE NULL
-        if (pixel != null)
-            throw new PLCException("Not implemented yet");
-        if (channel != null)
-            throw new PLCException("Not implemented yet");
 
         return null;
     }
@@ -487,19 +503,68 @@ public class CodeGenerator implements ASTVisitor {
     public Object visitAssignmentStatement(AssignmentStatement statementAssign, Object arg) throws PLCException {
         LValue lvalue = statementAssign.getLv();
         Expr expr = statementAssign.getE();
+        PixelSelector pixel = lvalue.getPixelSelector();
+        ColorChannel channel = lvalue.getChannelSelector();
 
-
-
-        Type type = lvalue.getlValueType();
-
-        lvalue.visit(this, arg);
-        sb.append(" = ");
         if (lvalue.getlValueType() == Type.STRING && expr.getType() == Type.INT) {
+            lvalue.visit(this, arg);
+            sb.append(" = ");
             sb.append("Integer.toString(");
             expr.visit(this, arg);
             sb.append(")");
         }
+        else if (lvalue.getlValueType() == Type.PIXEL) {
+            lvalue.visit(this, arg);
+            sb.append(" = ");
+            sb.append("PixelOps.pack(");
+            expr.visit(this, arg);
+            sb.append(")");
+
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+            }
+        }
+        else if (lvalue.getlValueType() == Type.IMAGE && pixel == null && channel == null) {
+            if (expr.getType() == Type.STRING) {
+                sb.append("ImageOps.copyInto(FileURLIO.readImage(");
+                expr.visit(this, arg);
+                sb.append("), ");
+                lvalue.visit(this, arg);
+                sb.append(")");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.FileURLIO") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.FileURLIO;\n";
+                }
+            }
+            else if (expr.getType() == Type.IMAGE) {
+                sb.append("ImageOps.copyInto(");
+                expr.visit(this, arg);
+                sb.append(", ");
+                lvalue.visit(this, arg);
+                sb.append(")");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                }
+            }
+            else if (expr.getType() == Type.PIXEL) {
+                sb.append("ImageOps.setAllPixels(");
+                lvalue.visit(this, arg);
+                sb.append(", ");
+                expr.visit(this, arg);
+                sb.append(")");
+
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
+                }
+                if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
+                    imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+                }
+            }
+        }
         else {
+            lvalue.visit(this, arg);
+            sb.append(" = ");
             expr.visit(this, arg);
         }
         return null;
