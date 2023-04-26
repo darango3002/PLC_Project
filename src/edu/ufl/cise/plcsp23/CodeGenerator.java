@@ -638,9 +638,9 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
             sb.append(")");
         }
-        else if (lvalue.getlValueType() == Type.IMAGE && expr.getType() == Type.PIXEL && channel != null) {
-
-        }
+//        else if (lvalue.getlValueType() == Type.IMAGE && expr.getType() == Type.PIXEL && channel != null) {
+//
+//        }
         else if (lvalue.getlValueType() == Type.PIXEL && pixel == null && channel == null) {
             lvalue.visit(this, arg);
             sb.append(" = ");
@@ -783,7 +783,7 @@ public class CodeGenerator implements ASTVisitor {
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr expr = returnStatement.getE();
 
-        System.out.println(returnType + " " + expr.getType());
+//        System.out.println(returnType + " " + expr.getType());
 
         sb.append("return ");
         if (returnType == Type.STRING && expr.getType() == Type.INT) {
