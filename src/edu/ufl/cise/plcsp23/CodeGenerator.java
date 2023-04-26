@@ -496,8 +496,9 @@ public class CodeGenerator implements ASTVisitor {
                 sb.append(" == 0 ? 1 : 0)");
             }
             else if (isKind(op, Kind.MINUS)) {
-                sb.append("-");
+                sb.append("((-1) * ");
                 expr.visit(this, arg);
+                sb.append(")");
             }
         }
         else
