@@ -697,7 +697,11 @@ public class CodeGenerator implements ASTVisitor {
             sb.append(channel.name().substring(0, 1).toUpperCase()); // capitalizes first char of color
             sb.append(channel.name().substring(1)); // rest of color
             sb.append("(");
+            sb.append("ImageOps.getRGB(");
             lvalue.visit(this, arg);
+            sb.append(", ");
+            pixel.visit(this, arg);
+            sb.append(")");
             sb.append(", ");
             expr.visit(this, arg);
             sb.append("); }\n}\n");
