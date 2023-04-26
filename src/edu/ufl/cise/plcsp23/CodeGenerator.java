@@ -680,7 +680,7 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
 //            sb.append(", ");
 //            expr.visit(this,arg);
-            sb.append(")");
+            sb.append("); }\n }\n");
 
         }
         else {
