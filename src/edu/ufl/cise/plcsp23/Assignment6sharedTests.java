@@ -37,20 +37,20 @@ class Assignment6Test_collab {
     static final boolean WAIT_FOR_INPUT = false;
 
     Object genCodeAndRun(String input, String mypackage, Object[] params) throws Exception {
-//		show("**** Input ****");
-//		show(input);
+		show("**** Input ****");
+		show(input);
         AST ast = CompilerComponentFactory.makeParser(input).parse();
         ast.visit(CompilerComponentFactory.makeTypeChecker(), null);
         String name = ((Program) ast).getIdent().getName();
         String packageName = "";
         String code = (String) ast.visit(CompilerComponentFactory.makeCodeGenerator(packageName), null);
-//		show("**** Generated Code ****");
-//		show(code);
-//		show("**** Output ****");
+		show("**** Generated Code ****");
+		show(code);
+		show("**** Output ****");
         byte[] byteCode = DynamicCompiler.compile(name, code);
         Object result = DynamicClassLoader.loadClassAndRunMethod(byteCode, name, "apply", params);
-//		show("**** Returned Result ****");
-//		show(result);
+		show("**** Returned Result ****");
+		show(result);
         return result;
     }
 

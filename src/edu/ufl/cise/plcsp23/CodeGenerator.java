@@ -738,9 +738,19 @@ public class CodeGenerator implements ASTVisitor {
     public Object visitReturnStatement(ReturnStatement returnStatement, Object arg) throws PLCException {
         Expr expr = returnStatement.getE();
 
+        System.out.println(returnType + " " + expr.getType());
+
         sb.append("return ");
         if (returnType == Type.STRING && expr.getType() == Type.INT) {
             sb.append("Integer.toString(");
+            expr.visit(this, arg);
+            sb.append(")");
+        }
+        else if (returnType == Type.STRING && expr.getType() == Type.PIXEL) {
+            if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps;") == -1) {
+                imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
+            }
+            sb.append("PixelOps.packedToString(");
             expr.visit(this, arg);
             sb.append(")");
         }
