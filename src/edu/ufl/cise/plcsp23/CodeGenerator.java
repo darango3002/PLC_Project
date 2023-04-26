@@ -638,6 +638,9 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
             sb.append(")");
         }
+        else if (lvalue.getlValueType() == Type.IMAGE && expr.getType() == Type.PIXEL && channel != null) {
+
+        }
         else if (lvalue.getlValueType() == Type.PIXEL && pixel == null && channel == null) {
             lvalue.visit(this, arg);
             sb.append(" = ");
