@@ -356,13 +356,6 @@ public class CodeGenerator implements ASTVisitor {
         return null;
     }
 
-//    private String getImageOp(Kind kind) {
-//        String op = switch (kind) {
-//            case PLUS -> "ImageOps.OP.PLUS";
-//            default -> null;
-//        };
-//        return op;
-//    }
 
     @Override
     public Object visitBinaryExpr(BinaryExpr binaryExpr, Object arg) throws PLCException {
