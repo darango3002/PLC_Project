@@ -709,6 +709,13 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
             sb.append(")); }\n}\n");
         }
+        else if (lvalue.getlValueType() == Type.STRING && expr.getType() == Type.PIXEL) {
+            lvalue.visit(this, arg);
+            sb.append(" = ");
+            sb.append("PixelOps.packedToString(");
+            expr.visit(this, arg);
+            sb.append(")");
+        }
         else {
             lvalue.visit(this, arg);
             sb.append(" = ");
