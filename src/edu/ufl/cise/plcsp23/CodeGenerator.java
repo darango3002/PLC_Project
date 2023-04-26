@@ -327,7 +327,16 @@ public class CodeGenerator implements ASTVisitor {
 
     @Override
     public Object visitPredeclaredVarExpr(PredeclaredVarExpr predeclaredVarExpr, Object arg) throws PLCException {
-        throw new PLCException("not yet implemented");
+        Kind kind = predeclaredVarExpr.getKind();
+
+        if (kind == Kind.RES_x) {
+            sb.append("x");
+        }
+        else if (kind == Kind.RES_y) {
+            sb.append("y");
+        }
+
+        return null;
     }
 
     @Override
@@ -506,6 +515,8 @@ public class CodeGenerator implements ASTVisitor {
         PixelSelector pixel = lvalue.getPixelSelector();
         ColorChannel channel = lvalue.getChannelSelector();
 
+
+
         if (lvalue.getlValueType() == Type.STRING && expr.getType() == Type.INT) {
             lvalue.visit(this, arg);
             sb.append(" = ");
@@ -513,7 +524,7 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
             sb.append(")");
         }
-        else if (lvalue.getlValueType() == Type.PIXEL) {
+        else if (lvalue.getlValueType() == Type.PIXEL && pixel == null && channel == null) {
             lvalue.visit(this, arg);
             sb.append(" = ");
             sb.append("PixelOps.pack(");
@@ -561,6 +572,22 @@ public class CodeGenerator implements ASTVisitor {
                     imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
                 }
             }
+        }
+        else if (lvalue.getlValueType() == Type.PIXEL && pixel != null && channel == null) {
+            sb.append("for (int y = 0; y != ");
+            lvalue.visit(this, arg);
+            sb.append(".getHeight(); y++){\n");
+            sb.append("for (int x = 0; x != ");
+            lvalue.visit(this, arg);
+            sb.append(".getWidth(); x++){\n");
+            sb.append("ImageOps.setRGB(");
+            lvalue.visit(this, arg);
+            sb.append(", x, y, ");
+            expr.visit(this, arg);
+//            sb.append(", ");
+//            expr.visit(this,arg);
+            sb.append(")");
+
         }
         else {
             lvalue.visit(this, arg);

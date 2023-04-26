@@ -770,7 +770,7 @@ class Assignment6Test_starter {
 	}
 
 	@Test
-	void cg25() throws Exception {
+	void cg25() throws Exception { //
 		String input = """
 				image gradient(int size){
 				image[size,size] im.
