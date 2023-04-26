@@ -721,9 +721,17 @@ public class CodeGenerator implements ASTVisitor {
     public Object visitWriteStatement(WriteStatement statementWrite, Object arg) throws PLCException {
         Expr expr = statementWrite.getE();
 
-        sb.append("ConsoleIO.write(");
-        expr.visit(this, arg);
-        sb.append(")");
+        if (expr.getType() == Type.PIXEL) {
+            sb.append("ConsoleIO.writePixel(");
+            expr.visit(this, arg);
+            sb.append(")");
+        }
+        else {
+            sb.append("ConsoleIO.write(");
+            expr.visit(this, arg);
+            sb.append(")");
+        }
+
 
         if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ConsoleIO") == -1) {
             imports += "import edu.ufl.cise.plcsp23.runtime.ConsoleIO;\n";
