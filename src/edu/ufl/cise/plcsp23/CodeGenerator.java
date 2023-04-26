@@ -374,12 +374,12 @@ public class CodeGenerator implements ASTVisitor {
 //        System.out.println(expr0.getType() + " " + expr1.getType() + " " + binaryExpr.getOp());
 
         if (isKind(opKind, Kind.OR, Kind.AND)) { // is a boolean expr
-            sb.append("(");
+            sb.append("((");
             expr0.visit(this, arg);
             sb.append(" != 0 ");
             sb.append(javaOp).append(" ");
             expr1.visit(this, arg);
-            sb.append(" != 0) ? 1 : 0");
+            sb.append(" != 0) ? 1 : 0)");
         }
         else if (isKind(opKind, Kind.LT, Kind.GT, Kind.LE, Kind.GE, Kind.EQ)) {
             if (expr0.getType() == Type.IMAGE && expr1.getType() == Type.IMAGE && isKind(opKind, Kind.EQ)) {
