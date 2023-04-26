@@ -436,14 +436,23 @@ public class CodeGenerator implements ASTVisitor {
                 if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps") == -1) {
                     imports += "import edu.ufl.cise.plcsp23.runtime.ImageOps;\n";
                 }
-                sb.append("ImageOps.binaryPackedPixelPixelOp(");
-                sb.append("ImageOps.OP.");
-                sb.append(binaryExpr.getOp());
-                sb.append(", ");
-                expr0.visit(this, arg);
-                sb.append(", ");
+
+                if (isKind(opKind, Kind.BITAND, Kind.BITOR)) {
+                    sb.append("(");
+                    expr0.visit(this, arg);
+                    sb.append(javaOp);
+                }
+                else {
+                    sb.append("ImageOps.binaryPackedPixelPixelOp(");
+                    sb.append("ImageOps.OP.");
+                    sb.append(binaryExpr.getOp());
+                    sb.append(", ");
+                    expr0.visit(this, arg);
+                    sb.append(", ");
+                }
                 expr1.visit(this, arg);
                 sb.append(")");
+
             }
             else if (expr0.getType() == Type.PIXEL && expr1.getType() == Type.INT) {
                 if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.ImageOps") == -1) {
