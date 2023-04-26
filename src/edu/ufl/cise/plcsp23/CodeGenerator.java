@@ -397,13 +397,30 @@ public class CodeGenerator implements ASTVisitor {
             }
 
         }
-        else if (isKind(opKind, Kind.EXP)) { // is an exponent
-            sb.append("(");
-            sb.append("(int)Math.pow(");
-            expr0.visit(this, arg);
-            sb.append(", ");
-            expr1.visit(this, arg);
-            sb.append("))");
+        else if (isKind(opKind, Kind.EXP)) {// is an exponent
+            if (expr0.getType() == Type.PIXEL) {
+                sb.append("PixelOps.pack((int) Math.pow(PixelOps.red(");
+                expr0.visit(this,arg);
+                sb.append("), ");
+                expr1.visit(this, arg);
+                sb.append("), (int) Math.pow(PixelOps.grn(");
+                expr0.visit(this,arg);
+                sb.append("), ");
+                expr1.visit(this, arg);
+                sb.append("), (int) Math.pow(PixelOps.blu(");
+                expr0.visit(this,arg);
+                sb.append("), ");
+                expr1.visit(this, arg);
+                sb.append("))");
+            }
+            else {
+                sb.append("(");
+                sb.append("(int)Math.pow(");
+                expr0.visit(this, arg);
+                sb.append(", ");
+                expr1.visit(this, arg);
+                sb.append("))");
+            }
         }
         else {
             if (expr0.getType() == Type.IMAGE && expr1.getType() == Type.IMAGE) {
