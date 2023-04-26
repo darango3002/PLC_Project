@@ -621,9 +621,9 @@ public class CodeGenerator implements ASTVisitor {
         else if (lvalue.getlValueType() == Type.PIXEL && pixel == null && channel == null) {
             lvalue.visit(this, arg);
             sb.append(" = ");
-            sb.append("PixelOps.pack(");
+            //sb.append("PixelOps.pack(");
             expr.visit(this, arg);
-            sb.append(")");
+           // sb.append(")");
 
             if (imports.indexOf("import edu.ufl.cise.plcsp23.runtime.PixelOps") == -1) {
                 imports += "import edu.ufl.cise.plcsp23.runtime.PixelOps;\n";
@@ -680,8 +680,27 @@ public class CodeGenerator implements ASTVisitor {
             expr.visit(this, arg);
 //            sb.append(", ");
 //            expr.visit(this,arg);
-            sb.append("); }\n }\n");
+            sb.append("); }\n}\n");
 
+        }
+        else if (lvalue.getlValueType() == Type.INT && pixel != null && channel != null) {
+            sb.append("for (int y = 0; y != ");
+            lvalue.visit(this, arg);
+            sb.append(".getHeight(); y++){\n");
+            sb.append("for (int x = 0; x != ");
+            lvalue.visit(this, arg);
+            sb.append(".getWidth(); x++){\n");
+            sb.append("ImageOps.setRGB(");
+            lvalue.visit(this, arg);
+            sb.append(", x, y, ");
+            sb.append("PixelOps.set");
+            sb.append(channel.name().substring(0, 1).toUpperCase()); // capitalizes first char of color
+            sb.append(channel.name().substring(1)); // rest of color
+            sb.append("(");
+            lvalue.visit(this, arg);
+            sb.append(", ");
+            expr.visit(this, arg);
+            sb.append("); }\n}\n");
         }
         else {
             lvalue.visit(this, arg);
