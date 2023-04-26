@@ -371,7 +371,7 @@ public class CodeGenerator implements ASTVisitor {
         Kind opKind = binaryExpr.getOp();
         String javaOp = getJavaOp(binaryExpr.getOp());
 
-        System.out.println(expr0.getType() + " " + expr1.getType() + " " + binaryExpr.getOp());
+//        System.out.println(expr0.getType() + " " + expr1.getType() + " " + binaryExpr.getOp());
 
         if (isKind(opKind, Kind.OR, Kind.AND)) { // is a boolean expr
             sb.append("(");
